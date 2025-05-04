@@ -16,5 +16,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build Backend/AuthenticationService/ --tag reminder/authentication-service:latest
+    - name: Build Authentication Docker Image
+      run: |
+        cd Backend/AuthenticationService
+        ./mvnw package
+        docker build -t reminder/authentication-service:latest .
+
