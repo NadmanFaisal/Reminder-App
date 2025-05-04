@@ -1,0 +1,66 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches:
+        - "*"
+  pull_request:
+    branches:
+        - "*"
+
+jobs:
+  build-authentication-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build the Docker image
+        run: |
+          cd Backend/AuthenticationService
+          ./mvnw clean package
+          docker build -t reminder/authentication-service:latest .
+
+  build-Logging-service:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-java@v4
+          with:
+            distribution: 'temurin'
+            java-version: '21'
+        - name: Build the Docker image
+          run: |
+            cd Backend/LoggingService
+            ./mvnw clean package
+            docker build -t reminder/logging-service:latest .
+
+  build-notification-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build the Docker image
+        run: |
+          cd Backend/NotificationService
+          ./mvnw clean package
+          docker build -t reminder/notification-service:latest .
+  
+  build-reminder-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build the Docker image
+        run: |
+          cd Backend/ReminderService
+          ./mvnw clean package
+          docker build -t reminder/reminder-service:latest .
