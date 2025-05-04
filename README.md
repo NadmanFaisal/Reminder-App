@@ -16,8 +16,20 @@ To package the AuthenticationService and run it using mvn
 
 To docker build:
 
-docker build reminder/authentication-service .
+docker build -t reminder/authentication-service .
 
 To docker run:
 
 docker run -p 8081:8081 reminder/authentication-service
+
+To package the LoggingService and run it using mvn
+
+./mvnw package && java -jar target/LoggingService-0.0.1-SNAPSHOT.jar 
+
+To docker build:
+
+docker build -t reminder/logging-service .
+
+To docker run:
+
+docker run -p 8082:8082 reminder/logging-service
