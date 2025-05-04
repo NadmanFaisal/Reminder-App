@@ -20,7 +20,7 @@ jobs:
       - name: Build the Docker image
         run: |
           cd Backend/AuthenticationService
-          ./mvnw package
+          ./mvnw clean package
           docker build -t reminder/authentication-service:latest .
 
   build-Logging-service:
@@ -34,7 +34,7 @@ jobs:
         - name: Build the Docker image
           run: |
             cd Backend/LoggingService
-            ./mvnw package
+            ./mvnw clean package
             docker build -t reminder/logging-service:latest .
 
   build-notification-service:
@@ -48,7 +48,7 @@ jobs:
       - name: Build the Docker image
         run: |
           cd Backend/NotificationService
-          ./mvnw package
+          ./mvnw clean package
           docker build -t reminder/notification-service:latest .
   
   build-reminder-service:
@@ -62,5 +62,5 @@ jobs:
       - name: Build the Docker image
         run: |
           cd Backend/ReminderService
-          ./mvnw package
+          ./mvnw clean package
           docker build -t reminder/reminder-service:latest .
