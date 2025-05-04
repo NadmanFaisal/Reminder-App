@@ -57,3 +57,7 @@ docker build -t reminder/reminder-service .
 To docker run:
 
 docker run -p 8084:8084 reminder/reminder-service
+
+To run the docker compose:
+
+docker compose up
