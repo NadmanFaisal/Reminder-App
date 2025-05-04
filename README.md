@@ -12,7 +12,7 @@ $env:PASSWORD="your_password$"
 
 To package the AuthenticationService and run it using mvn
 
-./mvnw package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
+./mvnw clean package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
 
 To docker build:
 
@@ -24,7 +24,7 @@ docker run -p 8081:8081 reminder/authentication-service
 
 To package the LoggingService and run it using mvn
 
-./mvnw package && java -jar target/LoggingService-0.0.1-SNAPSHOT.jar 
+./mvnw clean package && java -jar target/LoggingService-0.0.1-SNAPSHOT.jar 
 
 To docker build:
 
@@ -36,7 +36,7 @@ docker run -p 8082:8082 reminder/logging-service
 
 To package the NotificationService and run it using mvn
 
-./mvnw package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
+./mvnw clean package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
 
 To docker build:
 
@@ -48,7 +48,7 @@ docker run -p 8083:8083 reminder/notification-service
 
 To package the ReminderService and run it using mvn
 
-./mvnw package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar 
+./mvnw clean package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar 
 
 To docker build:
 
