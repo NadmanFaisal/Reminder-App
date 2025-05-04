@@ -2,7 +2,7 @@ name: Push to Docker Hub CI
 
 on:
   workflow_run:
-    workflows: ["build-docker"]
+    workflows: ["Docker Image CI"]
     types:
       - completed
     branches:
