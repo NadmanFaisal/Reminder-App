@@ -1,10 +1,8 @@
 name: Push to Docker Hub CI
 
 on:
-  workflow_run:
-    workflows: ["build-docker"]
-    types:
-      - completed
+  push:
+    branches: ["main"]
 
 jobs:
 
@@ -26,13 +24,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/AuthenticationService
+          ./mvnw clean package
+
       - name: Build & push AuthenticationService
         uses: docker/build-push-action@v6
         with:
           context: ./Backend/AuthenticationService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/authentication-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/authentication-service:latest
 
   push-logging-service:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
@@ -46,15 +55,28 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3   
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/LoggingService
+          ./mvnw clean package
+
       - name: Build & push LoggingService
         uses: docker/build-push-action@v6
         with:
           context: ./Backend/LoggingService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/logging-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/logging-service:latest
 
   push-notification-service:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
@@ -67,16 +89,29 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3   
+        uses: docker/setup-qemu-action@v3  
+ 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3  
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/NotificationService
+          ./mvnw clean package
+        
       - name: Build & push NotificationService
         uses: docker/build-push-action@v6
         with:
           context: ./Backend/NotificationService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/notification-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/notification-service:latest
 
   push-reminder-service:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
@@ -90,12 +125,25 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3   
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3 
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/ReminderService
+          ./mvnw clean package
+
       - name: Build & push ReminderService
         uses: docker/build-push-action@v6
         with:
           context: ./Backend/ReminderService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/reminder-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/reminder-service:latest

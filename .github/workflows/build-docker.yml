@@ -5,9 +5,8 @@ on:
     branches:
         - "*"
   pull_request:
-    types: [closed]
     branches:
-      - main 
+      - "*"
 
 jobs:
   build-authentication-service:
@@ -25,18 +24,18 @@ jobs:
           docker build -t reminder/authentication-service:latest .
 
   build-Logging-service:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-java@v4
-          with:
-            distribution: 'temurin'
-            java-version: '21'
-        - name: Build the Docker image
-          run: |
-            cd Backend/LoggingService
-            ./mvnw clean package
-            docker build -t reminder/logging-service:latest .
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Build the Docker image
+        run: |
+          cd Backend/LoggingService
+          ./mvnw clean package
+          docker build -t reminder/logging-service:latest .
 
   build-notification-service:
     runs-on: ubuntu-latest
