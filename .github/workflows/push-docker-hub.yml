@@ -30,6 +30,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
       - name: Package with Maven
         run: |
           cd ./Backend/AuthenticationService
@@ -56,7 +62,13 @@ jobs:
         uses: docker/setup-qemu-action@v3   
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Package with Maven
         run: |
@@ -86,6 +98,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3  
 
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
       - name: Package with Maven
         run: |
           cd ./Backend/NotificationService
@@ -113,6 +131,12 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3 
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
 
       - name: Package with Maven
         run: |
