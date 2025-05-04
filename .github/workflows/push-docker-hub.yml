@@ -47,7 +47,7 @@ jobs:
           context: ./Backend/AuthenticationService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/authentication-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}reminder/authentication-service:latest
 
   push-logging-service:
     runs-on: ubuntu-latest
@@ -81,7 +81,7 @@ jobs:
           context: ./Backend/LoggingService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/logging-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}reminder/logging-service:latest
 
   push-notification-service:
     runs-on: ubuntu-latest
@@ -115,7 +115,7 @@ jobs:
           context: ./Backend/NotificationService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/notification-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}reminder/notification-service:latest
 
   push-reminder-service:
     runs-on: ubuntu-latest
@@ -149,4 +149,4 @@ jobs:
           context: ./Backend/ReminderService
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: reminder/reminder-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}reminder/reminder-service:latest
