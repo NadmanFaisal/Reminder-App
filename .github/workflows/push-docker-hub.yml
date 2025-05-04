@@ -2,14 +2,15 @@ name: Push to Docker Hub CI
 
 on:
   workflow_run:
-    workflows: [build-docker]
+    workflows: ["build-docker"]
     types:
-    - completed
+      - completed
+    branches:
+      - main
 
 jobs:
 
   push-authentication-service:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +36,6 @@ jobs:
           tags: reminder/authentication-service:latest
 
   push-logging-service:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -57,7 +57,6 @@ jobs:
           tags: reminder/logging-service:latest
 
   push-notification-service:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,7 +78,6 @@ jobs:
           tags: reminder/notification-service:latest
 
   push-reminder-service:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
