@@ -30,6 +30,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Package with Maven
+        run: |
+          cd ./Backend/AuthenticationService
+          ./mvnw clean package
+
       - name: Build & push AuthenticationService
         uses: docker/build-push-action@v6
         with:
@@ -49,8 +54,15 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3   
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3   
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/LoggingService
+          ./mvnw clean package
+
       - name: Build & push LoggingService
         uses: docker/build-push-action@v6
         with:
@@ -69,9 +81,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3   
+        uses: docker/setup-qemu-action@v3  
+ 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3  
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/NotificationService
+          ./mvnw clean package
+        
       - name: Build & push NotificationService
         uses: docker/build-push-action@v6
         with:
@@ -91,8 +110,15 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}   
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3   
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3   
+        uses: docker/setup-buildx-action@v3 
+
+      - name: Package with Maven
+        run: |
+          cd ./Backend/ReminderService
+          ./mvnw clean package
+
       - name: Build & push ReminderService
         uses: docker/build-push-action@v6
         with:
