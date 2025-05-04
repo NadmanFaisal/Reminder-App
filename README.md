@@ -33,3 +33,27 @@ docker build -t reminder/logging-service .
 To docker run:
 
 docker run -p 8082:8082 reminder/logging-service
+
+To package the NotificationService and run it using mvn
+
+./mvnw package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
+
+To docker build:
+
+docker build -t reminder/notification-service .
+
+To docker run:
+
+docker run -p 8083:8083 reminder/notification-service
+
+To package the ReminderService and run it using mvn
+
+./mvnw package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar 
+
+To docker build:
+
+docker build -t reminder/reminder-service .
+
+To docker run:
+
+docker run -p 8084:8084 reminder/reminder-service
