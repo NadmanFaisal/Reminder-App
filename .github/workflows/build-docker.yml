@@ -5,12 +5,12 @@ on:
     branches:
         - "*"
   pull_request:
+    types: [closed]
     branches:
-        - "*"
+      - main 
 
 jobs:
   build-authentication-service:
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +25,6 @@ jobs:
           docker build -t reminder/authentication-service:latest .
 
   build-Logging-service:
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,7 +39,6 @@ jobs:
           docker build -t reminder/logging-service:latest .
 
   build-notification-service:
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +53,6 @@ jobs:
           docker build -t reminder/notification-service:latest .
   
   build-reminder-service:
-    if: ${{ github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,4 +64,4 @@ jobs:
         run: |
           cd Backend/ReminderService
           ./mvnw clean package
-          docker build -t reminder/reminder-service:latest . 
+          docker build -t reminder/reminder-service:latest .
