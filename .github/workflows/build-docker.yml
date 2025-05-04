@@ -17,4 +17,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build AuthenticationService/ --tag reminder/authentication-service:latest
+      run: docker build Backend/AuthenticationService/ --tag reminder/authentication-service:latest
