@@ -2,14 +2,7 @@ name: Push to Docker Hub CI
 
 on:
   push:
-    branches:
-        - "*"
-  # workflow_run:
-  #   workflows: ["Docker Image CI"]
-  #   types:
-  #     - completed
-  #   branches:
-  #     - main
+    branches: ["main"]
 
 jobs:
 
