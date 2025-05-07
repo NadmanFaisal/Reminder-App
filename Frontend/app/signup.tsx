@@ -1,24 +1,39 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { useState} from 'react';
+import { StyleSheet, View, Text, Alert } from 'react-native';
 import ReminderLogo from '@/components/AppLogo';
 import InputField from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
 import OAuthButton from '@/components/OAuthButton';
+import signupUser from '@/api/auth';
 
 const SignupLayout = () => {
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const signUpPress = async () => {
+    console.log('Sign up button pressed!')
+    try {
+      await signupUser(email, username, password)
+    } catch (error: any) {
+      Alert.alert("Signup Failed", error.message || "Something went wrong");
+    }
+  }
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.logoContainer}>
         <ReminderLogo />
       </View>
       <View style={styles.userInputContainer}>
-        <InputField type='email'/>
-        <InputField type='username' />
-        <InputField type='password' />
+        <InputField type='email' value={email} onChangeValue={setEmail} securedTextEntry={false} />
+        <InputField type='username' value={username} onChangeValue={setUsername} securedTextEntry={false} />
+        <InputField type='password' value={password} onChangeValue={setPassword} securedTextEntry={true} />
       </View>
 
 
       <View style={styles.submissionContainer}>
-        <SubmissionButton text={'Sign up'}/>
+        <SubmissionButton text={'Sign up'} onPress={signUpPress} />
         
         <View style={styles.divider}>
           <View style={styles.line} />

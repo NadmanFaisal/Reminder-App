@@ -8,7 +8,7 @@ export default function RootLayout() {
     }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="signup.tsx" />
+      <Stack.Screen name="signup" />
     </Stack>
   );
 }

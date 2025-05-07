@@ -2,18 +2,20 @@ import React from "react";
 import { View, StyleSheet, TextInput } from "react-native";
 
 type InputType = {
-    type: string
+    type: string,
+    value: string, 
+    onChangeValue: (text: string) => void;
+    securedTextEntry: boolean,
 }
 
 const InputField = (props: InputType) => {
-    const [text, onChangeText] = React.useState('');
-
     return (
         <View style={styles.container}>
             <TextInput
               style={styles.inputField}
-              onChangeText={onChangeText}
-              value={text}
+              secureTextEntry={props.securedTextEntry}
+              value={props.value}
+              onChangeText={props.onChangeValue}
               placeholder={props.type}
               placeholderTextColor={'#B7B7B7'}
             />

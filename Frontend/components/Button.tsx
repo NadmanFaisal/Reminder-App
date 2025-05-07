@@ -1,16 +1,17 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, Pressable } from "react-native";
 
 
 type buttonProp = {
     text: string,
+    onPress: () => void;
 }
 
 const SubmissionButton = (props: buttonProp) => {
     return (
-        <View style={styles.container}>
+        <Pressable style={styles.container} onPress={props.onPress}>
             <Text>{props.text}!</Text>
-        </View>
+        </Pressable>
     )
 }
 
