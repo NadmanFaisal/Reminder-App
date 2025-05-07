@@ -1,29 +1,22 @@
-import { Link } from 'expo-router';
-import react from 'react';
-import { View, Text } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import SignupLayout from './signup';
 
-const Cat = () => {
+const home = () => {
   return (
-    <View>
-      <Text>I am also a cat!</Text>
-    </View>
-  )
-}
-
-const Cafe = () => {
-  return (
-    <SafeAreaView>
-      <Text>
-        Welcome!
-      </Text>
-      <Cat />
-      <Cat />
-      <Cat />
-      <Link href={'/props'}>Learn Props here</Link>
-      <Link href={'/usestate'}>Learn use-states here</Link>
+    <SafeAreaView style={styles.container}>
+      <SignupLayout />
     </SafeAreaView>
   )
 }
 
-export default Cafe;
+const styles = StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: '#FFFBDE',
+      flex: 1,
+    },
+});
+
+export default home;

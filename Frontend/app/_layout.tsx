@@ -7,9 +7,8 @@ export default function RootLayout() {
       headerShown: false,
     }}
     >
-      <Stack.Screen name="home" />
-      <Stack.Screen name="props" />
-      <Stack.Screen name="usestate" />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="signup.tsx" />
     </Stack>
   );
 }
