@@ -1,5 +1,6 @@
 import { useState} from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import alert from '../components/Alert';
 import ReminderLogo from '@/components/AppLogo';
 import InputField from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
@@ -13,10 +14,22 @@ const SignupLayout = () => {
   
   const signUpPress = async () => {
     console.log('Sign up button pressed!')
+    if(email.trim() === '') {
+      alert('Email field cannot be empty.')
+      return
+    }
+    if(username === '') {
+      alert('Username field cannot be empty.')
+      return
+    }
+    if(password === '') {
+      alert('Password field cannot be empty.')
+      return
+    }
     try {
       await signupUser(email, username, password)
     } catch (error: any) {
-      Alert.alert("Signup Failed", error.message || "Something went wrong");
+      alert("Signup Failed", error.message || "Something went wrong");
     }
   }
 
