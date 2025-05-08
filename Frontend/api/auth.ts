@@ -2,12 +2,15 @@ import api from "./api";
 
 export default async function signupUser(email: string, username: string, password: string) {
     try {
-        const response = api.post('/AuthenticationService/SignUp', {
+        const response = await api.post('/AuthenticationService/SignUp', {
             email, username, password, 
         })
-        return response
+        return response.data
     } catch (error: any) {
-        const message = 'Signup failed: ' + error.response.data.message
+        const message =
+          error?.response?.data?.message ||
+          error?.message ||
+          'Signup failed due to an unknown error.';
         throw new Error(message);
     }
 }

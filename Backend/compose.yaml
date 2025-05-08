@@ -2,19 +2,19 @@ services:
   authentication-service:
     build: AuthenticationService/
     ports:
-      - "8081:8081"
+      - "8082:8082"
   
   logging-service:
     build: NotificationService/
     ports:
-      - "8082:8082"
+      - "8083:8083"
 
   notification-service:
     build: NotificationService/
     ports:
-      - "8083:8083"
+      - "8084:8084"
 
   reminder-service:
       build: NotificationService/
       ports:
-        - "8084:8084"
+        - "8085:8085"
