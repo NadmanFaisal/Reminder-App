@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.AuthenticationService.JwtUtil;
+import com.example.AuthenticationService.dto.SignInResponse;
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
 import com.example.AuthenticationService.model.User;
@@ -20,8 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+    private final JwtUtil jwtUtil;
 
-    public UserResponse createUser(UserRequest userRequest) {
+    public SignInResponse createUser(UserRequest userRequest) {
         String encryptedPassword = encoder.encode(userRequest.password());
         User user = User.builder()
             .email(userRequest.email())
@@ -29,8 +32,9 @@ public class UserService {
             .password(encryptedPassword)
             .build();
         userRepository.save(user);
+        String jwtToken = jwtUtil.generateToken(user.getEmail());
         log.info("User created succesfully!");
-        return new UserResponse(user.getEmail(), user.getUsername());
+        return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
     }
 
     public List<UserResponse> getAllusers() {

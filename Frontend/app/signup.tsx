@@ -35,7 +35,8 @@ const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
       const response = await signupUser(email, username, password)
       if(response.status === 201) {
         console.log('Signed up Succesfully!')
-        // await AsyncStorage.setItem('token', response.data.token)
+        console.log(response.data.token)
+        await AsyncStorage.setItem('token', response.data.token)
         await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
         setIsLoggedIn(true)
       }

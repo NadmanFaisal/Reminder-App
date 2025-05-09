@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.AuthenticationService.dto.SignInResponse;
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
 import com.example.AuthenticationService.exceptions.UserAlreadyExistsException;
@@ -27,7 +28,7 @@ public class UserController {
     
     @PostMapping("/SignUp")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createUser(@RequestBody UserRequest userRequest) {
+    public SignInResponse createUser(@RequestBody UserRequest userRequest) {
         if(userService.getUserByEmail(userRequest.email()).isPresent()) {
             throw new UserAlreadyExistsException("User with the same email already exists.");
         }
