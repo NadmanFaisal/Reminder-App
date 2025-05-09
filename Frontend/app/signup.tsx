@@ -29,6 +29,7 @@ const SignupLayout = () => {
     try {
       await signupUser(email, username, password)
     } catch (error: any) {
+      console.log(error.message)
       alert("Signup Failed", error.message || "Something went wrong");
     }
   }

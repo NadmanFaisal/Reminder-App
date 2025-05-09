@@ -1,6 +1,7 @@
 package com.example.AuthenticationService.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,9 @@ public class UserService {
             .stream()
             .map(user -> new UserResponse(user.getEmail(), user.getUsername()))
             .toList();
+    }
+
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findById(email);
     }
 }

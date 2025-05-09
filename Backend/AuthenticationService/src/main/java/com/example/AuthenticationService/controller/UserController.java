@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
+import com.example.AuthenticationService.exceptions.UserAlreadyExistsException;
 import com.example.AuthenticationService.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,9 @@ public class UserController {
     @PostMapping("/SignUp")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse createUser(@RequestBody UserRequest userRequest) {
+        if(userService.getUserByEmail(userRequest.email()).isPresent()) {
+            throw new UserAlreadyExistsException("User with the same email already exists.");
+        }
         return userService.createUser(userRequest);
     }
 

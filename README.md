@@ -61,3 +61,7 @@ docker run -p 8085:8085 reminder/reminder-service
 To run the docker compose:
 
 docker compose up
+
+Features:
+User data is encrypted using BCryptHashing
+Lombok for data injection
