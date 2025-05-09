@@ -1,4 +1,4 @@
-import { useState} from 'react';
+import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import alert from '../components/Alert';
 import ReminderLogo from '@/components/AppLogo';
@@ -6,8 +6,13 @@ import InputField from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
 import OAuthButton from '@/components/OAuthButton';
 import signupUser from '@/api/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const SignupLayout = () => {
+type SignupScreenProps = {
+  setIsLoggedIn: (value: boolean) => void;
+};
+
+const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +32,13 @@ const SignupLayout = () => {
       return
     }
     try {
-      await signupUser(email, username, password)
+      const response = await signupUser(email, username, password)
+      if(response.status === 201) {
+        console.log('Signed up Succesfully!')
+        // await AsyncStorage.setItem('token', response.data.token)
+        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
+        setIsLoggedIn(true)
+      }
     } catch (error: any) {
       console.log(error.message)
       alert("Signup Failed", error.message || "Something went wrong");
@@ -108,4 +119,4 @@ const styles = StyleSheet.create({
       },      
 });
 
-export default SignupLayout;
+export default SignupScreen;

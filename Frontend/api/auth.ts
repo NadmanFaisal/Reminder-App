@@ -5,7 +5,7 @@ export default async function signupUser(email: string, username: string, passwo
         const response = await api.post('/AuthenticationService/SignUp', {
             email, username, password, 
         })
-        return response.data
+        return response
     } catch (error: any) {
         const message =
           error?.response?.data?.message ||
