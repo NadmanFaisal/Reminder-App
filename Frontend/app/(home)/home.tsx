@@ -1,16 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
+import React, { useState } from "react";
 import { Text, SafeAreaView, Pressable } from "react-native";
+import { router } from 'expo-router';
 
 type logInProp = {
-    setIsLoggedIn: (value: boolean) => void
+    tokenData: string | null
 }
 
-const HomeScreen = ({ setIsLoggedIn }: logInProp) => {
+const HomeScreen = ({ tokenData }: logInProp) => {
     const signOut = async () => {
-        await AsyncStorage.removeItem("isLoggedIn");
         await AsyncStorage.removeItem("token");
-        setIsLoggedIn(false);
+        router.dismissTo('/signup')
     }
     return (
         <SafeAreaView>

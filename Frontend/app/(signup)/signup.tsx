@@ -1,18 +1,16 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
-import alert from '../components/Alert';
+import alert from '../../components/Alert';
 import ReminderLogo from '@/components/AppLogo';
 import InputField from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
 import OAuthButton from '@/components/OAuthButton';
 import signupUser from '@/api/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router'
 
-type SignupScreenProps = {
-  setIsLoggedIn: (value: boolean) => void;
-};
-
-const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
+const SignupScreen = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -37,8 +35,7 @@ const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
         console.log('Signed up Succesfully!')
         console.log(response.data.token)
         await AsyncStorage.setItem('token', response.data.token)
-        await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
-        setIsLoggedIn(true)
+        router.dismissTo('/home')
       }
     } catch (error: any) {
       console.log(error.message)
@@ -47,7 +44,7 @@ const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
   }
 
   return (
-    <View style={styles.mainContainer}>
+    <SafeAreaView style={styles.mainContainer}>
       <View style={styles.logoContainer}>
         <ReminderLogo />
       </View>
@@ -69,7 +66,7 @@ const SignupScreen = ({ setIsLoggedIn }: SignupScreenProps) => {
         
         <OAuthButton text='Sign up' />
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
