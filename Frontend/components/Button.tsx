@@ -4,7 +4,7 @@ import { StyleSheet, Text, Pressable } from "react-native";
 
 type buttonProp = {
     text: string,
-    onPress: () => void;
+    onPress?: () => void;
 }
 
 const SubmissionButton = (props: buttonProp) => {

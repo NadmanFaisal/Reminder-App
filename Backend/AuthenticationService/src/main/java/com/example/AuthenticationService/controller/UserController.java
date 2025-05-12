@@ -14,6 +14,7 @@ import com.example.AuthenticationService.dto.SignInResponse;
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
 import com.example.AuthenticationService.exceptions.UserAlreadyExistsException;
+import com.example.AuthenticationService.exceptions.UserDoesNotExistException;
 import com.example.AuthenticationService.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,15 @@ public class UserController {
             throw new UserAlreadyExistsException("User with the same email already exists.");
         }
         return userService.createUser(userRequest);
+    }
+
+    @PostMapping("/LogIn")
+    @ResponseStatus(HttpStatus.OK)
+    public SignInResponse loginUser(@RequestBody UserRequest userRequest) {
+        if(!userService.getUserByEmail(userRequest.email()).isPresent()) {
+            throw new UserDoesNotExistException("User does not exist with this email.");
+        }
+        return userService.loginUser(userRequest);
     }
 
     @GetMapping

@@ -1,4 +1,4 @@
-import SignupScreen from './(signup)/signup';
+import SignupScreen from './(auth)/signup';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
