@@ -25,6 +25,10 @@ jobs:
 
   build-api-gateway:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      PASSWORD: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -39,6 +43,10 @@ jobs:
 
   build-authentication-service:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      PASSWORD: ${{ secrets.DOCKER_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

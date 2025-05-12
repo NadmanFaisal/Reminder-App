@@ -27,13 +27,31 @@ public class UserService {
     public SignInResponse createUser(UserRequest userRequest) {
         String encryptedPassword = encoder.encode(userRequest.password());
         User user = User.builder()
-            .email(userRequest.email())
+            .email(userRequest.email().toLowerCase())
             .username(userRequest.username())
             .password(encryptedPassword)
             .build();
         userRepository.save(user);
         String jwtToken = jwtUtil.generateToken(user.getEmail());
-        log.info("User created succesfully!");
+        log.info("User created successfully!");
+        return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
+    }
+
+    public SignInResponse loginUser(UserRequest userRequest) {
+        Optional<User> fetchedUser = userRepository.findById(userRequest.email().toLowerCase());
+
+        if(fetchedUser.isEmpty()) {
+            throw new RuntimeException("User not found.");
+        }
+
+        User user = fetchedUser.get();
+
+        if(!encoder.matches(userRequest.password(), user.getPassword())) {
+            throw new RuntimeException("Incorrect password.");
+        }
+
+        String jwtToken = jwtUtil.generateToken(user.getEmail());
+        log.info("User logged in successfully!");
         return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
     }
 
@@ -45,6 +63,6 @@ public class UserService {
     }
 
     public Optional<User> getUserByEmail(String email) {
-        return userRepository.findById(email);
+        return userRepository.findById(email.toLowerCase());
     }
 }

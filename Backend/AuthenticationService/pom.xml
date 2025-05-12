@@ -54,7 +54,7 @@
 			<version>1.18.38</version>
 			<scope>provided</scope>
 		</dependency>
-			<dependency>
+		<dependency>
     	    <groupId>io.jsonwebtoken</groupId>
     	    <artifactId>jjwt-api</artifactId>
     	    <version>0.11.5</version>
