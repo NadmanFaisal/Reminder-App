@@ -3,7 +3,8 @@ name: Push to Docker Hub CI
 on:
   push:
     branches: 
-      - main
+      # - main
+      - "*"
 
 jobs:
 
@@ -45,6 +46,12 @@ jobs:
 
   push-api-gateway:
     runs-on: ubuntu-latest
+    
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      USERNAME: ${{ secrets.MONGO_USERNAME }}
+      PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -81,6 +88,12 @@ jobs:
 
   push-authentication-service:
     runs-on: ubuntu-latest
+
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      USERNAME: ${{ secrets.MONGO_USERNAME }}
+      PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -117,6 +130,11 @@ jobs:
 
   push-logging-service:
     runs-on: ubuntu-latest
+
+    env:
+      USERNAME: ${{ secrets.MONGO_USERNAME }}
+      PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -151,6 +169,11 @@ jobs:
 
   push-notification-service:
     runs-on: ubuntu-latest
+
+    env:
+      USERNAME: ${{ secrets.MONGO_USERNAME }}
+      PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
@@ -185,6 +208,11 @@ jobs:
 
   push-reminder-service:
     runs-on: ubuntu-latest
+
+    env:
+      USERNAME: ${{ secrets.MONGO_USERNAME }}
+      PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
