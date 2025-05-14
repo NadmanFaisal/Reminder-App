@@ -18,9 +18,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class Reminder {
     @Id
-    private String reminder_id;
+    private String reminderId;
     private String description;
-    private String status;
+    private boolean completed;
     private boolean deleted;
     private Date createdAt;
     private Date lastModified;
