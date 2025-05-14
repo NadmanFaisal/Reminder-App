@@ -21,6 +21,7 @@ public class ReminderService {
     public ReminderResponse createReminder(ReminderRequest reminderRequest) {
         Reminder reminder = Reminder.builder()
             .description(reminderRequest.description())
+            .userId(reminderRequest.userId())
             .completed(reminderRequest.completed())
             .createdAt(reminderRequest.createdAt())
             .lastModified(reminderRequest.lastModified())
@@ -30,7 +31,8 @@ public class ReminderService {
         log.info("Reminder created successfully!");
         return new ReminderResponse(
             reminder.getReminderId(), 
-            reminder.getDescription(), 
+            reminder.getDescription(),
+            reminder.getUserId(), 
             reminder.isCompleted(), 
             reminder.getCreatedAt(), 
             reminder.getLastModified(), 
@@ -44,6 +46,7 @@ public class ReminderService {
             .map(reminder -> new ReminderResponse(
                 reminder.getReminderId(), 
                 reminder.getDescription(), 
+                reminder.getUserId(),
                 reminder.isCompleted(), 
                 reminder.getCreatedAt(), 
                 reminder.getLastModified(), 

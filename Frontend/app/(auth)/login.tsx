@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import alert from '../../components/Alert';
-import ReminderLogo from '@/components/AppLogo';
+import IntroBox from '@/components/IntroBox';
 import InputField from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
 import OAuthButton from '@/components/OAuthButton';
@@ -45,7 +45,7 @@ const LoginScreen = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.logoContainer}>
-        <ReminderLogo />
+        <IntroBox text="Reminder App" />
       </View>
       <View style={styles.userInputContainer}>
         <InputField type='email' value={email} onChangeValue={setEmail} securedTextEntry={false} />

@@ -1,10 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const ReminderLogo = () => {
+type textProp = {
+  text: string
+}
+
+const IntroBox = (props: textProp) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.logoText}>Reminder App</Text>
+            <Text style={styles.logoText}>{props.text}</Text>
         </View>
     )
 }
@@ -23,9 +27,10 @@ const styles = StyleSheet.create({
     logoText: {
       color: '#000',
       fontFamily: 'Inter',
+      textAlign: 'center',
       fontSize: 36,
       fontStyle: 'normal',
       fontWeight: '400',
     }
   });
-export default ReminderLogo
+export default IntroBox

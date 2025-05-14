@@ -1,0 +1,17 @@
+import api from "./api"
+
+export async function createReminder(description: string, userId: string, completed: boolean, deleted: boolean, createdAt: Date, lastModified: Date, token: string) {
+    try {
+        const response = await api.post('/ReminderService/CreateReminder', {
+            description, completed, deleted, createdAt, lastModified, userId
+        }, { headers: { 'Authorization': `Bearer ${token}` } }
+    )
+    return response
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Reminder creation failed due to an unknown error.';
+      throw new Error(message);
+    }
+}
