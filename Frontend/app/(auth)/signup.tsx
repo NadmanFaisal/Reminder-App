@@ -20,7 +20,11 @@ const SignupScreen = () => {
     if(email.trim() === '') {
       alert('Email field cannot be empty.')
       return
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Email is invalid.')
+      return
     }
+
     if(username === '') {
       alert('Username field cannot be empty.')
       return

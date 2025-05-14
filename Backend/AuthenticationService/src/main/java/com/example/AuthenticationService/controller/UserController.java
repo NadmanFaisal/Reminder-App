@@ -19,7 +19,6 @@ import com.example.AuthenticationService.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-//@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/AuthenticationService")

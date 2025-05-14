@@ -1,5 +1,7 @@
 package com.example.AuthenticationService.model;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,4 +20,5 @@ public class User {
     private String email;
     private String username;
     private String password;
+    private List<String> reminders;
 }

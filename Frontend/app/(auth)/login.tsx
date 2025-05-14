@@ -19,7 +19,11 @@ const LoginScreen = () => {
     if(email.trim() === '') {
       alert('Email field cannot be empty.')
       return
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Email is invalid.')
+      return
     }
+
     if(password === '') {
       alert('Password field cannot be empty.')
       return
