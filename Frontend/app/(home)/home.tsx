@@ -1,10 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, Modal } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
 import AddButton from "@/components/AddButton";
+import DoneCancelButton from "@/components/DoneCancelButton";
+import { BoxedInputField } from "@/components/InputField";
 
 type logInProp = {
     tokenData: string | null
@@ -12,6 +14,15 @@ type logInProp = {
 
 const HomeScreen = ({ tokenData }: logInProp) => {
     const [username, setUsername] = useState('')
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const [date, setDate] = useState('')
+    
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
+    const [remindDate, setRemindDate] = useState('')
+    const [remindTime, setRemindTime] = useState('')
+
     useEffect(() => {
         const getData = async () => {
           try {
@@ -36,6 +47,39 @@ const HomeScreen = ({ tokenData }: logInProp) => {
     }
     return (
         <SafeAreaView style={styles.mainContainer}>
+            
+            <Modal 
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => { setModalVisible(!modalVisible);
+            }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <View style={styles.modalButtonContainer}>
+                        <DoneCancelButton text="Cancel" onPress={() => setModalVisible(!modalVisible)} />
+                        <DoneCancelButton text="Done" />
+                    </View>
+
+                    <View style={styles.titleContainer}>
+                        <BoxedInputField type="Title" value={title} onChangeValue={setTitle} securedTextEntry={false} />
+                    </View>
+                    
+                    <View style={styles.descriptionContainer}>
+                        <BoxedInputField type="Description" value={description} onChangeValue={setDescription} securedTextEntry={false} height={230} textAlignVertical="top" multiline={true} />
+                    </View>
+
+                    <View style={styles.dateAndTimeContainer}>
+                        <BoxedInputField type="Date" value={remindDate} onChangeValue={setRemindDate} securedTextEntry={false} width={120} />
+                        <BoxedInputField type="Time" value={remindTime} onChangeValue={setRemindTime} securedTextEntry={false} width={120} />
+                    </View>
+                  </View>
+
+
+                </View>
+
+            </Modal>
+
             <View style={styles.introContainer}>
                 <IntroBox text={`Welcome, ${username}`}/>
                 <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable>
@@ -47,11 +91,12 @@ const HomeScreen = ({ tokenData }: logInProp) => {
                 <View style={styles.dayContainer}></View>
 
                 <View style={styles.addButtonContainer}>
-                    <AddButton />
+                    <AddButton onPress={() => setModalVisible(true)}/>
                 </View>
             </View>
 
             <View style={styles.reminderContainer}>
+
 
             </View>
 
@@ -117,6 +162,50 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         height: '10%'
+    },
+
+    //====================== MODAL VIEW ============================
+
+    centeredView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalView: {
+        width: '100%',
+        height: '65%', 
+        backgroundColor: '#FFFBDE',
+        borderRadius: 15,
+        borderTopWidth: 4,
+        alignItems: 'center',
+        padding: 15
+    },
+    modalButtonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '10%',
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+    titleContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '15%',
+        width: '100%',
+    },
+    descriptionContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '50%',
+        width: '100%',
+    },
+    dateAndTimeContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '15%',
+        width: '100%',
+        justifyContent: 'space-between',
     }
 })
 

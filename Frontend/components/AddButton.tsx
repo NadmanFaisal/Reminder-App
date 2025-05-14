@@ -14,19 +14,19 @@ const AddButton = (props?: buttonProp) => {
 
 const styles = StyleSheet.create({
     button: {
-        width: 30,
-        height: 30,
-        borderRadius: 30,
-        backgroundColor: '#FFFBDE',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 4
-      },
-      text: {
-        color: 'black',
-        fontSize: 25,
-        fontWeight: 'bold',
-      }
+      width: 30,
+      height: 30,
+      borderRadius: 30,
+      backgroundColor: '#FFFBDE',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 4
+    },
+    text: {
+      color: 'black',
+      fontSize: 25,
+      fontWeight: 'bold',
+    }
 })
 
 export default AddButton

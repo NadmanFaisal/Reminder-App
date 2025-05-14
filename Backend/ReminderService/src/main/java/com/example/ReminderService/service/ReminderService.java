@@ -25,6 +25,7 @@ public class ReminderService {
             .completed(reminderRequest.completed())
             .createdAt(reminderRequest.createdAt())
             .lastModified(reminderRequest.lastModified())
+            .remindAt(reminderRequest.remindAt())
             .deleted(reminderRequest.deleted())
             .build();
         reminderRepository.save(reminder);
@@ -36,6 +37,7 @@ public class ReminderService {
             reminder.isCompleted(), 
             reminder.getCreatedAt(), 
             reminder.getLastModified(), 
+            reminder.getRemindAt(),
             reminder.isDeleted()
         );
     }
@@ -50,6 +52,7 @@ public class ReminderService {
                 reminder.isCompleted(), 
                 reminder.getCreatedAt(), 
                 reminder.getLastModified(), 
+                reminder.getRemindAt(),
                 reminder.isDeleted()
             ))
             .toList();

@@ -25,4 +25,5 @@ public class Reminder {
     private boolean deleted;
     private Date createdAt;
     private Date lastModified;
+    private Date remindAt;
 }
