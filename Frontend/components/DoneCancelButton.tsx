@@ -7,8 +7,8 @@ type buttonProp = {
 
 const DoneCancelButton = (props: buttonProp) => {
     return (    
-        <Pressable style={styles.button}>
-            <Text onPress={props.onPress} style={styles.text}>{props.text}</Text>
+        <Pressable style={styles.button} onPress={props.onPress}>
+            <Text style={styles.text}>{props.text}</Text>
         </Pressable>
     )
 }

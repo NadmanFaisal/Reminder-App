@@ -1,27 +1,32 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, Modal } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, Modal, Keyboard, TouchableWithoutFeedback } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
 import AddButton from "@/components/AddButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
-import { BoxedInputField } from "@/components/InputField";
+import { BoxedInputField, DateInputField, TimeinputField } from "@/components/InputField";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-type logInProp = {
-    tokenData: string | null
-}
+import { createReminder } from "@/api/reminder";
 
-const HomeScreen = ({ tokenData }: logInProp) => {
+const HomeScreen = () => {
     const [username, setUsername] = useState('')
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const [date, setDate] = useState('')
+    const [modalVisible, setModalVisible] = useState(false)
     
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    const [remindDate, setRemindDate] = useState('')
-    const [remindTime, setRemindTime] = useState('')
+    
+    const [showDatePicker, setShowDatePicker] = useState(false)
+    const [showTimePicker, setShowTimePicker] = useState(false)
+    
+    const [displayDate, setDisplayDate] = useState(new Date())
+    const [displayTime, setDisplayTime] = useState(new Date())
+    
+    const [remindDate, setRemindDate] = useState(new Date())
+    const [remindTime, setRemindTime] = useState(new Date())
+
 
     useEffect(() => {
         const getData = async () => {
@@ -40,49 +45,90 @@ const HomeScreen = ({ tokenData }: logInProp) => {
           }
         }
         getData()
-      }, [])
+    }, [])
+
     const signOut = async () => {
         await AsyncStorage.removeItem("token");
         router.dismissTo('/signup')
     }
+
+    const postReminder = async () => {
+    }
+
     return (
         <SafeAreaView style={styles.mainContainer}>
-            
             <Modal 
                 animationType="slide"
                 transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => { setModalVisible(!modalVisible);
-            }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <View style={styles.modalButtonContainer}>
-                        <DoneCancelButton text="Cancel" onPress={() => setModalVisible(!modalVisible)} />
-                        <DoneCancelButton text="Done" />
+                onRequestClose={() => { setModalVisible(!modalVisible) }}>
+                <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false); setShowTimePicker(false); setModalVisible(false) }}>
+                    <View style={styles.centeredView}>
+                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false) }}>
+                            <View style={styles.modalView}>
+                                <View style={styles.modalButtonContainer}>
+                                    <DoneCancelButton text="Cancel" onPress={() => setModalVisible(!modalVisible)} />
+                                    <DoneCancelButton text="Done" 
+                                        onPress={() => postReminder()}
+                                    />
+                                </View>
+
+                                <View style={styles.titleContainer}>
+                                    <BoxedInputField type="Title" value={title} onChangeValue={setTitle} securedTextEntry={false} />
+                                </View>
+
+                                <View style={styles.descriptionContainer}>
+                                    <BoxedInputField type="Description" value={description} onChangeValue={setDescription} securedTextEntry={false} height={100} textAlignVertical="top" multiline={true} />
+                                </View>
+
+                                <View style={styles.dateAndTimeContainer}>
+                                    <DateInputField type="Date" onPress={() => { setShowDatePicker(true); setShowTimePicker(false) }} value={displayDate.toISOString().split('T')[0]} securedTextEntry={false} width={120} />
+                                    <TimeinputField type="Time" onPress={() => { setShowTimePicker(true); setShowDatePicker(false) }} value={displayTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} securedTextEntry={false} width={120} />
+                                </View>
+
+                                <View style={styles.dateTimePickerContainer}>
+                                    {showDatePicker && (
+                                        <DateTimePicker
+                                            value={remindDate}
+                                            mode="date"
+                                            display="spinner"
+                                            themeVariant="light"
+                                            onChange={(event, remindDate) => { 
+                                                setShowDatePicker(false)
+                                                if (remindDate) {
+                                                    setRemindDate(remindDate)
+                                                    setDisplayDate(remindDate)
+                                                }
+                                            }}
+                                        />
+                                    )}
+
+                                    {showTimePicker && (
+                                        <DateTimePicker
+                                            value={remindTime}
+                                            mode="time"
+                                            display="spinner"
+                                            themeVariant="light"
+                                            onChange={(event, remindTime) => { 
+                                                setShowTimePicker(false)
+                                                if (remindTime) {
+                                                    setRemindTime(remindTime)
+                                                    setDisplayTime(remindTime)
+                                                }
+                                            }}
+                                        />
+                                    )}
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-
-                    <View style={styles.titleContainer}>
-                        <BoxedInputField type="Title" value={title} onChangeValue={setTitle} securedTextEntry={false} />
-                    </View>
-                    
-                    <View style={styles.descriptionContainer}>
-                        <BoxedInputField type="Description" value={description} onChangeValue={setDescription} securedTextEntry={false} height={230} textAlignVertical="top" multiline={true} />
-                    </View>
-
-                    <View style={styles.dateAndTimeContainer}>
-                        <BoxedInputField type="Date" value={remindDate} onChangeValue={setRemindDate} securedTextEntry={false} width={120} />
-                        <BoxedInputField type="Time" value={remindTime} onChangeValue={setRemindTime} securedTextEntry={false} width={120} />
-                    </View>
-                  </View>
-
-
-                </View>
-
+                </TouchableWithoutFeedback>
             </Modal>
 
             <View style={styles.introContainer}>
                 <IntroBox text={`Welcome, ${username}`}/>
                 <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable>
+                <Text>{}</Text>
             </View>
 
             <View style={styles.calendarContainer}>
@@ -96,7 +142,6 @@ const HomeScreen = ({ tokenData }: logInProp) => {
             </View>
 
             <View style={styles.reminderContainer}>
-
 
             </View>
 
@@ -188,6 +233,9 @@ const styles = StyleSheet.create({
         width: '100%',
         justifyContent: 'space-between',
     },
+
+    //==============================================================
+
     titleContainer: {
         display: 'flex',
         flexDirection: 'row',
@@ -197,7 +245,7 @@ const styles = StyleSheet.create({
     descriptionContainer: {
         display: 'flex',
         flexDirection: 'row',
-        height: '50%',
+        height: '25%',
         width: '100%',
     },
     dateAndTimeContainer: {
@@ -206,6 +254,14 @@ const styles = StyleSheet.create({
         height: '15%',
         width: '100%',
         justifyContent: 'space-between',
+    },
+    dateTimePickerContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '35%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })
 
