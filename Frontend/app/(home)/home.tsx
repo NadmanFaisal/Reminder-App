@@ -8,13 +8,14 @@ import AddButton from "@/components/AddButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import { BoxedInputField, DateInputField, TimeinputField } from "@/components/InputField";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import alert from "@/components/Alert";
+import alert from "../../components/Alert";
 
-import { createReminder } from "@/api/reminder";
+import { createReminder, getUserReminders } from "@/api/reminder";
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
+    const [reminders, setReminders] = useState([])
     const [token, setToken] = useState('')
     
     const [modalVisible, setModalVisible] = useState(false)
@@ -53,8 +54,24 @@ const HomeScreen = () => {
             router.dismissTo('/login')
           }
         }
-        getData()
+        getData();
     }, [])
+
+    useEffect(() => {
+        const fetchUserReminders = async () => {
+            try {
+                console.log(email)
+                const response = await getUserReminders(email, token)
+                if(response.data) {
+                    setReminders(response.data)
+                    console.log(response.data)
+                }
+            } catch (err: any) {
+                console.log('Reminders could not be fetched:', err.message)
+            }
+        }
+        fetchUserReminders()
+    }, [email, token])
 
     const signOut = async () => {
         await AsyncStorage.removeItem("token");
@@ -69,7 +86,7 @@ const HomeScreen = () => {
             mergedDateTime.setSeconds(0)
             mergedDateTime.setMilliseconds(0)
 
-            const response = createReminder(description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
+            const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
             if(response) {
                 console.log(response)
                 setModalVisible(false)

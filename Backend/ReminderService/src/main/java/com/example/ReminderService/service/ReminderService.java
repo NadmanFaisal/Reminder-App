@@ -21,6 +21,7 @@ public class ReminderService {
     public ReminderResponse createReminder(ReminderRequest reminderRequest) {
         Reminder reminder = Reminder.builder()
             .description(reminderRequest.description())
+            .title(reminderRequest.title())
             .userEmail(reminderRequest.userEmail())
             .completed(reminderRequest.completed())
             .createdAt(reminderRequest.createdAt())
@@ -32,6 +33,7 @@ public class ReminderService {
         log.info("Reminder created successfully!");
         return new ReminderResponse(
             reminder.getReminderId(), 
+            reminder.getTitle(),
             reminder.getDescription(),
             reminder.getUserEmail(), 
             reminder.isCompleted(), 
@@ -47,6 +49,7 @@ public class ReminderService {
             .stream()
             .map(reminder -> new ReminderResponse(
                 reminder.getReminderId(), 
+                reminder.getTitle(),
                 reminder.getDescription(), 
                 reminder.getUserEmail(),
                 reminder.isCompleted(), 
@@ -57,4 +60,23 @@ public class ReminderService {
             ))
             .toList();
     }
+
+    public List<ReminderResponse> getUserReminders(String userEmail) {
+        return reminderRepository.findAllByUserEmail(userEmail)
+            .stream()
+            .map(reminder -> new ReminderResponse(
+                reminder.getReminderId(), 
+                reminder.getTitle(),
+                reminder.getDescription(), 
+                reminder.getUserEmail(),
+                reminder.isCompleted(), 
+                reminder.getCreatedAt(), 
+                reminder.getLastModified(), 
+                reminder.getRemindAt(),
+                reminder.isDeleted()
+            ))
+            .toList();
+    }
+
+    
 }

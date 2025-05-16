@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class Reminder {
     @Id
     private String reminderId;
+    private String title;
     private String description;
     private String userEmail;
     private boolean completed;
