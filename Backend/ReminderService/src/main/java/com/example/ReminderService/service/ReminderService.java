@@ -1,6 +1,8 @@
 package com.example.ReminderService.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
@@ -61,6 +63,21 @@ public class ReminderService {
             .toList();
     }
 
+    public void updateCompleteStatus(ReminderRequest reminderRequest) {
+        Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
+
+        if (fetchedReminder.isEmpty()) {
+            throw new RuntimeException("Reminder not found");
+        }
+
+        Reminder reminder = fetchedReminder.get();
+        Boolean completed = reminder.isCompleted();
+        reminder.setCompleted(!completed);
+        reminder.setLastModified(new Date());
+        reminderRepository.save(reminder);
+        log.info("Reminder status changed successfully!");
+    }
+
     public List<ReminderResponse> getUserReminders(String userEmail) {
         return reminderRepository.findAllByUserEmail(userEmail)
             .stream()
@@ -78,5 +95,8 @@ public class ReminderService {
             .toList();
     }
 
+    public Optional<Reminder> getReminderById(String reminderId) {
+        return reminderRepository.findById(reminderId);
+    }
     
 }

@@ -1,16 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, Modal, Keyboard, TouchableWithoutFeedback } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
 import AddButton from "@/components/AddButton";
-import DoneCancelButton from "@/components/DoneCancelButton";
-import { BoxedInputField, DateInputField, TimeinputField } from "@/components/InputField";
-import DateTimePicker from '@react-native-community/datetimepicker';
 import alert from "../../components/Alert";
-
-import { createReminder, getUserReminders } from "@/api/reminder";
+import { CreateReminderModal } from "@/components/ModalView";
+import { Reminder } from "@/components/Reminders";
+import { createReminder, getUserReminders, updateReminderCompleteStatus } from "@/api/reminder";
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
@@ -31,6 +29,8 @@ const HomeScreen = () => {
     
     const [remindDate, setRemindDate] = useState(new Date())
     const [remindTime, setRemindTime] = useState(new Date())
+
+    const [refreshKey, setRefreshKey] = useState(0);
 
 
     useEffect(() => {
@@ -63,7 +63,10 @@ const HomeScreen = () => {
                 console.log(email)
                 const response = await getUserReminders(email, token)
                 if(response.data) {
-                    setReminders(response.data)
+                    const latestReminders = response.data.sort(
+                        (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                    );
+                    setReminders(latestReminders)
                     console.log(response.data)
                 }
             } catch (err: any) {
@@ -71,7 +74,7 @@ const HomeScreen = () => {
             }
         }
         fetchUserReminders()
-    }, [email, token])
+    }, [email, token, refreshKey])
 
     const signOut = async () => {
         await AsyncStorage.removeItem("token");
@@ -80,6 +83,11 @@ const HomeScreen = () => {
 
     const postReminder = async () => {
         try {
+            if(title === '') {
+                alert('Title cannot be empty.')
+                return
+            }
+
             const mergedDateTime = new Date(remindDate)
             mergedDateTime.setHours(remindTime.getHours())
             mergedDateTime.setMinutes(remindTime.getMinutes())
@@ -90,87 +98,51 @@ const HomeScreen = () => {
             if(response) {
                 console.log(response)
                 setModalVisible(false)
+                setRefreshKey(prev => prev + 1)
             }
         } catch (err: any) {
             alert("Creating reminder failed", err.message || "Something went wrong");
         }
     }
 
+    const changeReminderCompletedStatus = async (reminderId: string) => {
+        console.log('completed', reminderId)
+        try {
+            const response = await updateReminderCompleteStatus(reminderId, token)
+            if(response.status === 200) {
+                console.log('Reminder completed status updated')
+                setRefreshKey(prev => prev + 1)
+            }
+        } catch (err: any) {
+            alert("Changing reminder status failed", err.message || "Something went wrong");
+        }
+    };
+
     return (
         <SafeAreaView style={styles.mainContainer}>
-            <Modal 
-                animationType="slide"
-                transparent={true}
+
+            <CreateReminderModal
                 visible={modalVisible}
-                onRequestClose={() => { setModalVisible(!modalVisible) }}>
-                <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false); setShowTimePicker(false); setModalVisible(false) }}>
-                    <View style={styles.centeredView}>
-                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false); setShowTimePicker(false) }}>
-                            <View style={styles.modalView}>
-                                <View style={styles.modalButtonContainer}>
-                                    <DoneCancelButton text="Cancel" onPress={() => setModalVisible(!modalVisible)} />
-                                    <DoneCancelButton text="Done" 
-                                        onPress={() => postReminder()}
-                                    />
-                                </View>
+                onClose={() => setModalVisible(false)}
+                onDone={postReminder}
+                title={title}
+                setTitle={setTitle}
+                description={description}
+                setDescription={setDescription}
+                displayDate={displayDate}
+                displayTime={displayTime}
+                showDatePicker={showDatePicker}
+                showTimePicker={showTimePicker}
+                setShowDatePicker={setShowDatePicker}
+                setShowTimePicker={setShowTimePicker}
+                remindDate={remindDate}
+                setRemindDate={setRemindDate}
+                remindTime={remindTime}
+                setRemindTime={setRemindTime}
+                setDisplayDate={setDisplayDate}
+                setDisplayTime={setDisplayTime}
+            />
 
-                                <View style={styles.titleContainer}>
-                                    <BoxedInputField type="Title" value={title} onChangeValue={setTitle} securedTextEntry={false} />
-                                </View>
-
-                                <View style={styles.descriptionContainer}>
-                                    <BoxedInputField type="Description" value={description} onChangeValue={setDescription} securedTextEntry={false} height={100} textAlignVertical="top" multiline={true} />
-                                </View>
-
-                                <View style={styles.dateAndTimeContainer}>
-                                    <DateInputField type="Date" onPress={() => { setShowDatePicker(true); setShowTimePicker(false) }} value={displayDate.toISOString().split('T')[0]} securedTextEntry={false} width={120} />
-                                    <TimeinputField type="Time" onPress={() => { setShowTimePicker(true); setShowDatePicker(false) }} value={displayTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} securedTextEntry={false} width={120} />
-                                </View>
-
-                                <View style={styles.dateTimePickerContainer}>
-                                    {showDatePicker && (
-                                        <DateTimePicker
-                                            value={remindDate}
-                                            mode="date"
-                                            display="spinner"
-                                            themeVariant="light"
-                                            onChange={(event, remindDate) => { 
-                                                setShowDatePicker(false)
-                                                if (remindDate) {
-                                                    setRemindDate(remindDate)
-                                                    setDisplayDate(remindDate)
-                                                }
-                                            }}
-                                        />
-                                    )}
-
-                                    {showTimePicker && (
-                                        <DateTimePicker
-                                            value={remindTime}
-                                            mode="time"
-                                            display="spinner"
-                                            themeVariant="light"
-                                            onChange={(event, selectedTime) => {
-                                                setShowTimePicker(false)
-                                                if (selectedTime) {
-                                                    const mergedDateTime = new Date(remindDate)
-                                                    mergedDateTime.setHours(selectedTime.getHours())
-                                                    mergedDateTime.setMinutes(selectedTime.getMinutes())
-                                                    mergedDateTime.setSeconds(0)
-                                                    mergedDateTime.setMilliseconds(0)
-                                            
-                                                    setRemindTime(mergedDateTime)
-                                                    setDisplayTime(mergedDateTime)
-                                                }
-                                            }}
-                                        />
-                                    )}
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
 
             <View style={styles.introContainer}>
                 <IntroBox text={`Welcome, ${username}`}/>
@@ -189,11 +161,15 @@ const HomeScreen = () => {
             </View>
 
             <View style={styles.reminderContainer}>
-
+                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}>
+                    {reminders.map((reminder) => (
+                        <Reminder key={reminder.reminderId} object={reminder} onPress={() => changeReminderCompletedStatus(reminder.reminderId)}/>
+                    ))}
+                </ScrollView>
             </View>
 
             <View style={styles.showAllContainer}>
-
+                <Text>Show all</Text>
             </View>
         </SafeAreaView>
     )
@@ -218,7 +194,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '15%'
+        height: '25%'
     },
     monthContainer: {
         display: 'flex',
@@ -242,74 +218,19 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     reminderContainer: {
+        padding: 3,
         display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '40%'
+        flexDirection: 'column',
+        height: '45%'
     },
     showAllContainer: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '10%'
+        height: '5%'
     },
 
-    //====================== MODAL VIEW ============================
-
-    centeredView: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    },
-    modalView: {
-        width: '100%',
-        height: '65%', 
-        backgroundColor: '#FFFBDE',
-        borderRadius: 15,
-        borderTopWidth: 4,
-        alignItems: 'center',
-        padding: 15
-    },
-    modalButtonContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '10%',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-
-    //==============================================================
-
-    titleContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '15%',
-        width: '100%',
-    },
-    descriptionContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '25%',
-        width: '100%',
-    },
-    dateAndTimeContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '15%',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-    dateTimePickerContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '35%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
 })
 
 export default HomeScreen

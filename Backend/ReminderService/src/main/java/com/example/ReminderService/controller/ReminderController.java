@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,12 @@ public class ReminderController {
     @ResponseStatus(HttpStatus.OK)
     public List<ReminderResponse> getUserReminders(@RequestParam String userEmail) {
         return reminderService.getUserReminders(userEmail);
+    }
+
+    @PatchMapping("/UpdateCompleteStatus")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {
+        reminderService.updateCompleteStatus(reminderRequest);
     }
 
 }
