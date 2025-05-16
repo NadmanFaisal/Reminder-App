@@ -20,7 +20,7 @@ public class Reminder {
     @Id
     private String reminderId;
     private String description;
-    private String userId;
+    private String userEmail;
     private boolean completed;
     private boolean deleted;
     private Date createdAt;

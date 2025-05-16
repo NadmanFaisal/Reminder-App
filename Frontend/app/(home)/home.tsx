@@ -8,11 +8,15 @@ import AddButton from "@/components/AddButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import { BoxedInputField, DateInputField, TimeinputField } from "@/components/InputField";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import alert from "@/components/Alert";
 
 import { createReminder } from "@/api/reminder";
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
+    const [token, setToken] = useState('')
+    
     const [modalVisible, setModalVisible] = useState(false)
     
     const [title, setTitle] = useState('')
@@ -31,17 +35,22 @@ const HomeScreen = () => {
     useEffect(() => {
         const getData = async () => {
           try {
-            const tokendData = await AsyncStorage.getItem('token')
-            console.log('Token:', tokendData, 'at index.tsx')
+            const tokenData = await AsyncStorage.getItem('token')
+            console.log('Token:', tokenData, 'at index.tsx')
       
-            const response = await validateMe(tokendData)
+            const response = await validateMe(tokenData)
             console.log(response.data)
+            if(tokenData) {
+                setToken(tokenData)
+            }
             if(response.data.username) {
-              setUsername(response.data.username)
+                setEmail(response.data.email)
+                setUsername(response.data.username)
             }
           } catch (err: any) {
             console.log('Token validation failed:', err.message)
             await AsyncStorage.removeItem('token')
+            router.dismissTo('/login')
           }
         }
         getData()
@@ -49,10 +58,25 @@ const HomeScreen = () => {
 
     const signOut = async () => {
         await AsyncStorage.removeItem("token");
-        router.dismissTo('/signup')
+        router.dismissTo('/login')
     }
 
     const postReminder = async () => {
+        try {
+            const mergedDateTime = new Date(remindDate)
+            mergedDateTime.setHours(remindTime.getHours())
+            mergedDateTime.setMinutes(remindTime.getMinutes())
+            mergedDateTime.setSeconds(0)
+            mergedDateTime.setMilliseconds(0)
+
+            const response = createReminder(description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
+            if(response) {
+                console.log(response)
+                setModalVisible(false)
+            }
+        } catch (err: any) {
+            alert("Creating reminder failed", err.message || "Something went wrong");
+        }
     }
 
     return (
@@ -64,7 +88,7 @@ const HomeScreen = () => {
                 onRequestClose={() => { setModalVisible(!modalVisible) }}>
                 <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false); setShowTimePicker(false); setModalVisible(false) }}>
                     <View style={styles.centeredView}>
-                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false) }}>
+                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowDatePicker(false); setShowTimePicker(false) }}>
                             <View style={styles.modalView}>
                                 <View style={styles.modalButtonContainer}>
                                     <DoneCancelButton text="Cancel" onPress={() => setModalVisible(!modalVisible)} />
@@ -109,11 +133,17 @@ const HomeScreen = () => {
                                             mode="time"
                                             display="spinner"
                                             themeVariant="light"
-                                            onChange={(event, remindTime) => { 
+                                            onChange={(event, selectedTime) => {
                                                 setShowTimePicker(false)
-                                                if (remindTime) {
-                                                    setRemindTime(remindTime)
-                                                    setDisplayTime(remindTime)
+                                                if (selectedTime) {
+                                                    const mergedDateTime = new Date(remindDate)
+                                                    mergedDateTime.setHours(selectedTime.getHours())
+                                                    mergedDateTime.setMinutes(selectedTime.getMinutes())
+                                                    mergedDateTime.setSeconds(0)
+                                                    mergedDateTime.setMilliseconds(0)
+                                            
+                                                    setRemindTime(mergedDateTime)
+                                                    setDisplayTime(mergedDateTime)
                                                 }
                                             }}
                                         />

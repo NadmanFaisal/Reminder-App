@@ -1,9 +1,9 @@
 import api from "./api"
 
-export async function createReminder(description: string, userId: string, completed: boolean, deleted: boolean, createdAt: Date, lastModified: Date, remindAt: Date, token: string) {
+export async function createReminder(description: string, email: string, completed: boolean, deleted: boolean, createdAt: Date, lastModified: Date, remindAt: Date, token: string) {
     try {
         const response = await api.post('/ReminderService/CreateReminder', {
-            description, completed, deleted, createdAt, lastModified, userId, remindAt
+            description, completed, deleted, createdAt, lastModified, remindAt
         }, { headers: { 'Authorization': `Bearer ${token}` } }
     )
     return response
