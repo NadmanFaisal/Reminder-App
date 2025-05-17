@@ -29,3 +29,18 @@ export async function loginUser(email: string, password: string) {
       throw new Error(message);
     }
 }
+
+export async function validateMe(token: string | null) {
+  try {
+    const response = await api.post('AuthenticationService/ValidateMe', {
+      token
+    })
+    return response
+  } catch (error: any) {
+    const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Could not validate due to an unknown error.';
+      throw new Error(message);
+  }
+}

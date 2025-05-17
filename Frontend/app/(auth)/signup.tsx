@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import alert from '../../components/Alert';
-import ReminderLogo from '@/components/AppLogo';
-import InputField from '@/components/InputField';
+import IntroBox from '@/components/IntroBox';
+import { InputField } from '@/components/InputField';
 import SubmissionButton from '@/components/Button';
 import OAuthButton from '@/components/OAuthButton';
 import { signupUser } from '@/api/auth';
@@ -20,7 +20,11 @@ const SignupScreen = () => {
     if(email.trim() === '') {
       alert('Email field cannot be empty.')
       return
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      alert('Email is invalid.')
+      return
     }
+
     if(username === '') {
       alert('Username field cannot be empty.')
       return
@@ -46,7 +50,7 @@ const SignupScreen = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.logoContainer}>
-        <ReminderLogo />
+        <IntroBox text='Reminder App' />
       </View>
       <View style={styles.userInputContainer}>
         <InputField type='email' value={email} onChangeValue={setEmail} securedTextEntry={false} />

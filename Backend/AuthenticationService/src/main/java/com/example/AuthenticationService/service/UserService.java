@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.AuthenticationService.JwtUtil;
 import com.example.AuthenticationService.dto.SignInResponse;
+import com.example.AuthenticationService.dto.TokenRequest;
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
 import com.example.AuthenticationService.model.User;
@@ -35,6 +36,23 @@ public class UserService {
         String jwtToken = jwtUtil.generateToken(user.getEmail());
         log.info("User created successfully!");
         return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
+    }
+
+    public SignInResponse validateUser(TokenRequest tokenRequest) {
+        boolean valid = jwtUtil.validateJwtToken(tokenRequest.token());
+        if(!valid) {
+            throw new RuntimeException("Token is not valid.");
+        }
+        String email = jwtUtil.getEmailFromToken(tokenRequest.token());
+        Optional<User> fetchedUser = getUserByEmail(email);
+
+        if (fetchedUser.isEmpty()) {
+            throw new RuntimeException("User not found for email: " + email);
+        }
+
+        User user = fetchedUser.get();
+        log.info("User validated successfully.");
+        return new SignInResponse(user.getEmail(), user.getUsername(), tokenRequest.token());
     }
 
     public SignInResponse loginUser(UserRequest userRequest) {

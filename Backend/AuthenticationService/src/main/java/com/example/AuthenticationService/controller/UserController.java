@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.AuthenticationService.dto.SignInResponse;
+import com.example.AuthenticationService.dto.TokenRequest;
 import com.example.AuthenticationService.dto.UserRequest;
 import com.example.AuthenticationService.dto.UserResponse;
 import com.example.AuthenticationService.exceptions.UserAlreadyExistsException;
@@ -19,7 +20,6 @@ import com.example.AuthenticationService.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-//@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/AuthenticationService")
@@ -34,6 +34,12 @@ public class UserController {
             throw new UserAlreadyExistsException("User with the same email already exists.");
         }
         return userService.createUser(userRequest);
+    }
+
+    @PostMapping("/ValidateMe")
+    @ResponseStatus(HttpStatus.OK)
+    public SignInResponse validateUser(@RequestBody TokenRequest tokenRequest) {
+        return userService.validateUser(tokenRequest);
     }
 
     @PostMapping("/LogIn")
