@@ -48,24 +48,24 @@ public class Routes {
                     req -> HandlerFunctions.http("http://localhost:8084").handle(req)
                 )
             )
-            // .route(
-            //     RequestPredicates.path("/ReminderService/**")
-            //         .and(RequestPredicates.method(HttpMethod.OPTIONS)
-            //             .or(RequestPredicates.method(HttpMethod.POST))
-            //             .or(RequestPredicates.method(HttpMethod.GET))
-            //             .or(RequestPredicates.method(HttpMethod.PATCH))),
-            //     request -> jwtFilter.filter(request,
-            //         req -> HandlerFunctions.http("http://localhost:8085").handle(req)
-            //     )
-            // )
             .route(
                 RequestPredicates.path("/ReminderService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
                         .or(RequestPredicates.method(HttpMethod.POST))
                         .or(RequestPredicates.method(HttpMethod.GET))
                         .or(RequestPredicates.method(HttpMethod.PATCH))),
-                HandlerFunctions.http("http://localhost:8085")
+                request -> jwtFilter.filter(request,
+                    req -> HandlerFunctions.http("http://localhost:8085").handle(req)
+                )
             )
+            // .route(
+            //     RequestPredicates.path("/ReminderService/**")
+            //         .and(RequestPredicates.method(HttpMethod.OPTIONS)
+            //             .or(RequestPredicates.method(HttpMethod.POST))
+            //             .or(RequestPredicates.method(HttpMethod.GET))
+            //             .or(RequestPredicates.method(HttpMethod.PATCH))),
+            //     HandlerFunctions.http("http://localhost:8085")
+            // )
             .build();
     }   
 }
