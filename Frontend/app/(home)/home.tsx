@@ -174,24 +174,24 @@ const HomeScreen = () => {
                         </View>
 
                         <View style={styles.modalReminderContainer}>
-                        <ScrollView style={{ flex: 1 }}>
-                            {completedReminders.length === 0 ? (
-                                <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
-                                    <Image
-                                        source={NoReminderImage}
-                                        style={{ width: 200, height: 200, resizeMode: 'contain' }}
-                                    />
-                                </View>
-                            ) : (
-                                completedReminders.map((reminder) => (
-                                    <Reminder
-                                        key={reminder.reminderId}
-                                        object={reminder}
-                                        onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
-                                    />
-                                ))
-                            )}
-                        </ScrollView>
+                            <ScrollView style={{ flex: 1 }}>
+                                {completedReminders.length === 0 ? (
+                                    <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
+                                        <Image
+                                            source={NoReminderImage}
+                                            style={{ width: 200, height: 200, resizeMode: 'contain' }}
+                                        />
+                                    </View>
+                                ) : (
+                                    completedReminders.map((reminder) => (
+                                        <Reminder
+                                            key={reminder.reminderId}
+                                            object={reminder}
+                                            onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                        />
+                                    ))
+                                )}
+                            </ScrollView>
                         </View>
 
                     </View>
