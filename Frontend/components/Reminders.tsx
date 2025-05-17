@@ -1,29 +1,56 @@
-import React from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native"
+import React, { useRef } from "react";
+import { Animated, View, Text, StyleSheet, Pressable } from "react-native";
 
-type ReminderProp= {
+type ReminderProp = {
     object: {
         reminderId: string;
         title: string;
         description: string;
-        completed?: boolean,
-    },
+        completed?: boolean;
+    };
     onPress?: () => void;
-}
+};
 
-export const Reminder = (props: ReminderProp) => {
+export const Reminder = ({ object, onPress }: ReminderProp) => {
+    const slideAnim = useRef(new Animated.Value(0)).current;
+    const opacityAnim = useRef(new Animated.Value(1)).current;
+
+    const handlePress = () => {
+        Animated.parallel([
+            Animated.timing(slideAnim, {
+                toValue: -300, // Slide to the left
+                duration: 300,
+                useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+                toValue: 0, // Fade out
+                duration: 300,
+                useNativeDriver: true,
+            }),
+        ]).start(() => {
+            onPress?.();
+        });
+    };
 
     return (
-        <View key={props.object.reminderId} style={styles.container}>
+        <Animated.View
+            style={[
+                styles.container,
+                {
+                    transform: [{ translateX: slideAnim }],
+                    opacity: opacityAnim,
+                },
+            ]}
+        >
             <View style={styles.mainContainer}>
-                <Pressable onPress={props.onPress} style={styles.checkbox}>
-                    {props.object.completed && <View style={styles.innerDot} />}
+                <Pressable onPress={handlePress} style={styles.checkbox}>
+                    {object.completed && <View style={styles.innerDot} />}
                 </Pressable>
-                <Text>{props.object.title}</Text>
+                <Text>{object.title}</Text>
             </View>
-        </View>
-    )
-}
+        </Animated.View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, TouchableWithoutFeedback, Keyboard } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
@@ -11,13 +11,22 @@ import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus } from "@/api/reminder";
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
+import NoReminderImage from "../../assets/images/no-reminders.png"
+
+// To avoid errors when passing reminderId as keys to a map
+type ReminderObject = {
+    reminderId: string;
+    title: string;
+    description: string;
+    completed?: boolean;
+};
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
-    const [reminders, setReminders] = useState([])
-    const [completedReminders, setCompletedReminders] = useState([]);
-    const [incompletedReminders, setIncompletedReminders] = useState([]);
+    const [reminders, setReminders] = useState<ReminderObject[]>([])
+    const [completedReminders, setCompletedReminders] = useState<ReminderObject[]>([]);
+    const [incompletedReminders, setIncompletedReminders] = useState<ReminderObject[]>([]);
 
     const [token, setToken] = useState('')
     
@@ -157,9 +166,7 @@ const HomeScreen = () => {
             />
 
             <Modal animationType="slide" transparent visible={showAllModalVisible} onRequestClose={() => setShowAllModalVisible(false)}>
-              <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); setShowAllModalVisible(false); }}>
                 <View style={styles.centeredView}>
-                  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                     <View style={styles.modalView}>
 
                         <View style={styles.modalButtonContainer}>
@@ -167,16 +174,28 @@ const HomeScreen = () => {
                         </View>
 
                         <View style={styles.modalReminderContainer}>
-                            <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-                                {completedReminders.map((reminder) => (
-                                    <Reminder key={reminder.reminderId} object={reminder} onPress={() => changeReminderCompletedStatus(reminder.reminderId)}/>
-                                ))}
-                            </ScrollView>
+                        <ScrollView style={{ flex: 1 }}>
+                            {completedReminders.length === 0 ? (
+                                <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
+                                    <Image
+                                        source={NoReminderImage}
+                                        style={{ width: 200, height: 200, resizeMode: 'contain' }}
+                                    />
+                                </View>
+                            ) : (
+                                completedReminders.map((reminder) => (
+                                    <Reminder
+                                        key={reminder.reminderId}
+                                        object={reminder}
+                                        onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                    />
+                                ))
+                            )}
+                        </ScrollView>
                         </View>
+
                     </View>
-                  </TouchableWithoutFeedback>
                 </View>
-              </TouchableWithoutFeedback>
             </Modal>
 
             <View style={styles.introContainer}>
@@ -195,12 +214,26 @@ const HomeScreen = () => {
             </View>
 
             <View style={styles.reminderContainer}>
-                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-                    {incompletedReminders.map((reminder) => (
-                        <Reminder key={reminder.reminderId} object={reminder} onPress={() => changeReminderCompletedStatus(reminder.reminderId)}/>
-                    ))}
+                <ScrollView style={{ flex: 1 }}>
+                    {incompletedReminders.length === 0 ? (
+                        <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
+                            <Image
+                                source={NoReminderImage}
+                                style={{ width: 200, height: 200, resizeMode: 'contain' }}
+                            />
+                        </View>
+                    ) : (
+                        incompletedReminders.map((reminder) => (
+                            <Reminder
+                                key={reminder.reminderId}
+                                object={reminder}
+                                onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                            />
+                        ))
+                    )}
                 </ScrollView>
             </View>
+
 
             <View style={styles.showAllContainer}>
                 <ShowAllButton width={'20%'} onPress={() => setShowAllModalVisible(true)} />
