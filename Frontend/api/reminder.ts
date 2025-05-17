@@ -39,8 +39,8 @@ export async function updateReminderCompleteStatus(reminderId: string, token: st
   try {
     const response = await api.patch('/ReminderService/UpdateCompleteStatus', {
       reminderId,
-      headers: { 'Authorization': `Bearer ${token}` }
     },
+    { headers: { 'Authorization': `Bearer ${token}` } }
   )
     return response
   } catch (err: any) {

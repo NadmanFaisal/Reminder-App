@@ -6,7 +6,7 @@ import { BoxedInputField, DateInputField, TimeinputField } from './InputField'
 import DoneCancelButton from './DoneCancelButton'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
-type ModalProps = {
+type CreateReminderProps = {
     visible?: boolean;
     onClose: () => void;
     onDone?: () => void;
@@ -29,7 +29,7 @@ type ModalProps = {
   };
   
 
-export const CreateReminderModal = (props: ModalProps) => {
+export const CreateReminderModal = (props: CreateReminderProps) => {
   return (
     <Modal animationType="slide" transparent visible={props.visible} onRequestClose={props.onClose}>
       <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss(); props.onClose(); }}>
