@@ -1,22 +1,37 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
 import AddButton from "@/components/AddButton";
 import alert from "../../components/Alert";
-import { CreateReminderModal } from "@/components/ModalView";
+import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus } from "@/api/reminder";
+import ShowAllButton from "@/components/ShowAllButton";
+import DoneCancelButton from "@/components/DoneCancelButton";
+import NoReminderImage from "../../assets/images/no-reminders.png"
+
+// To avoid errors when passing reminderId as keys to a map
+type ReminderObject = {
+    reminderId: string;
+    title: string;
+    description: string;
+    completed?: boolean;
+};
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
-    const [reminders, setReminders] = useState([])
+    const [reminders, setReminders] = useState<ReminderObject[]>([])
+    const [completedReminders, setCompletedReminders] = useState<ReminderObject[]>([]);
+    const [incompletedReminders, setIncompletedReminders] = useState<ReminderObject[]>([]);
+
     const [token, setToken] = useState('')
     
-    const [modalVisible, setModalVisible] = useState(false)
+    const [createReminderModalVisible, setCreateReminderModalVisible] = useState(false)
+    const [showAllModalVisible, setShowAllModalVisible] = useState(false)
     
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -59,14 +74,21 @@ const HomeScreen = () => {
 
     useEffect(() => {
         const fetchUserReminders = async () => {
+            if (!email || !token) return
             try {
                 console.log(email)
                 const response = await getUserReminders(email, token)
                 if(response.data) {
-                    const latestReminders = response.data.sort(
+                    const sortedReminders = response.data.sort(
                         (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     );
-                    setReminders(latestReminders)
+    
+                    const completed = sortedReminders.filter((r: any) => r.completed === true);
+                    const incompleted = sortedReminders.filter((r: any) => !r.completed);
+
+                    setCompletedReminders(completed)
+                    setIncompletedReminders(incompleted)
+                    setReminders(sortedReminders)
                     console.log(response.data)
                 }
             } catch (err: any) {
@@ -97,7 +119,7 @@ const HomeScreen = () => {
             const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
             if(response) {
                 console.log(response)
-                setModalVisible(false)
+                setCreateReminderModalVisible(false)
                 setRefreshKey(prev => prev + 1)
             }
         } catch (err: any) {
@@ -122,8 +144,8 @@ const HomeScreen = () => {
         <SafeAreaView style={styles.mainContainer}>
 
             <CreateReminderModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
+                visible={createReminderModalVisible}
+                onClose={() => setCreateReminderModalVisible(false)}
                 onDone={postReminder}
                 title={title}
                 setTitle={setTitle}
@@ -143,11 +165,42 @@ const HomeScreen = () => {
                 setDisplayTime={setDisplayTime}
             />
 
+            <Modal animationType="slide" transparent visible={showAllModalVisible} onRequestClose={() => setShowAllModalVisible(false)}>
+                <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+
+                        <View style={styles.modalButtonContainer}>
+                            <DoneCancelButton text="Done" onPress={() => setShowAllModalVisible(false)} />
+                        </View>
+
+                        <View style={styles.modalReminderContainer}>
+                            <ScrollView style={{ flex: 1 }}>
+                                {completedReminders.length === 0 ? (
+                                    <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
+                                        <Image
+                                            source={NoReminderImage}
+                                            style={{ width: 200, height: 200, resizeMode: 'contain' }}
+                                        />
+                                    </View>
+                                ) : (
+                                    completedReminders.map((reminder) => (
+                                        <Reminder
+                                            key={reminder.reminderId}
+                                            object={reminder}
+                                            onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                        />
+                                    ))
+                                )}
+                            </ScrollView>
+                        </View>
+
+                    </View>
+                </View>
+            </Modal>
 
             <View style={styles.introContainer}>
                 <IntroBox text={`Welcome, ${username}`}/>
                 <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable>
-                <Text>{}</Text>
             </View>
 
             <View style={styles.calendarContainer}>
@@ -156,20 +209,34 @@ const HomeScreen = () => {
                 <View style={styles.dayContainer}></View>
 
                 <View style={styles.addButtonContainer}>
-                    <AddButton onPress={() => setModalVisible(true)}/>
+                    <AddButton onPress={() => setCreateReminderModalVisible(true)}/>
                 </View>
             </View>
 
             <View style={styles.reminderContainer}>
-                <ScrollView contentContainerStyle={{ alignItems: 'center', justifyContent: 'center' }}>
-                    {reminders.map((reminder) => (
-                        <Reminder key={reminder.reminderId} object={reminder} onPress={() => changeReminderCompletedStatus(reminder.reminderId)}/>
-                    ))}
+                <ScrollView style={{ flex: 1 }}>
+                    {incompletedReminders.length === 0 ? (
+                        <View style={{ alignItems: 'center', justifyContent: 'flex-start', flex: 1 }}>
+                            <Image
+                                source={NoReminderImage}
+                                style={{ width: 200, height: 200, resizeMode: 'contain' }}
+                            />
+                        </View>
+                    ) : (
+                        incompletedReminders.map((reminder) => (
+                            <Reminder
+                                key={reminder.reminderId}
+                                object={reminder}
+                                onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                            />
+                        ))
+                    )}
                 </ScrollView>
             </View>
 
+
             <View style={styles.showAllContainer}>
-                <Text>Show all</Text>
+                <ShowAllButton width={'20%'} onPress={() => setShowAllModalVisible(true)} />
             </View>
         </SafeAreaView>
     )
@@ -224,12 +291,71 @@ const styles = StyleSheet.create({
         height: '45%'
     },
     showAllContainer: {
+        paddingRight: '5%',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-end',
         justifyContent: 'center',
         height: '5%'
     },
+
+    // ==========================================================
+
+    centeredView: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalView: {
+        width: '100%',
+        height: '65%', 
+        backgroundColor: '#FFFBDE',
+        borderRadius: 15,
+        borderTopWidth: 4,
+        alignItems: 'center',
+        padding: 15
+    },
+    modalButtonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '10%',
+        width: '100%',
+        justifyContent: 'flex-end',
+    },
+    modalReminderContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '90%',
+        width: '100%'
+    },
+    titleContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '15%',
+        width: '100%',
+    },
+    descriptionContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '25%',
+        width: '100%',
+    },
+    dateAndTimeContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '15%',
+        width: '100%',
+        justifyContent: 'space-between',
+    },
+    dateTimePickerContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        height: '35%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 
 })
 
