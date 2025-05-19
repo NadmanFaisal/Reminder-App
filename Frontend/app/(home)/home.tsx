@@ -8,7 +8,7 @@ import AddButton from "@/components/AddButton";
 import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
-import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder } from "@/api/reminder";
+import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder, deleteReminder } from "@/api/reminder";
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -33,7 +33,7 @@ const HomeScreen = () => {
     const [createReminderModalVisible, setCreateReminderModalVisible] = useState(false)
     const [showAllModalVisible, setShowAllModalVisible] = useState(false)
 
-    const [reminderId, setReminderId] = useState('')
+    const [selectedReminderId, setSelectedReminderId] = useState('')
 
     // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
 
@@ -118,7 +118,7 @@ const HomeScreen = () => {
     }
 
     const resetReminderModalFields = () => {
-        setReminderId('')
+        setSelectedReminderId('')
         setTitle('')
         setDescription('')
         setDisplayDate(new Date())
@@ -162,7 +162,6 @@ const HomeScreen = () => {
     }
 
     const changeReminderCompletedStatus = async (reminderId: string) => {
-        console.log('completed', reminderId)
         try {
             const response = await updateReminderCompleteStatus(reminderId, token)
             if(response.status === 200) {
@@ -182,7 +181,7 @@ const HomeScreen = () => {
                 const data = response.data;
                 const reminderDate = new Date(data.remindAt);
                 
-                setReminderId(data.reminderId)
+                setSelectedReminderId(data.reminderId)
                 setTitle(data.title);
                 setDescription(data.description);
                 setRemindDate(reminderDate);
@@ -226,7 +225,7 @@ const HomeScreen = () => {
         console.log("Fields have changed. Patchine.");
 
         try {
-            const response = await updateReminder(reminderId, title, description, mergedCurrentRemindAt, token)
+            const response = await updateReminder(selectedReminderId, title, description, mergedCurrentRemindAt, token)
             if(response.status === 200) {
                 console.log('Patched successfully!')
                 setRefreshKey(prev => prev + 1);
@@ -238,6 +237,19 @@ const HomeScreen = () => {
         resetReminderModalFields();
         setViewReminderModalVisible(false);
     };
+
+    const deleteCurrentReminder = async (reminderId: string) => {
+        try {
+            console.log('delete pressed', reminderId)
+            const response = await deleteReminder(reminderId, token)
+            if(response.status === 200) {
+                console.log('Reminder deleted.')
+                setRefreshKey(prev => prev + 1)
+            }
+        } catch (err: any) {
+            alert("Deleting reminder failed", err.message || "Something went wrong");
+        }
+    }
 
     return (
         <SafeAreaView style={styles.mainContainer}>
@@ -309,6 +321,7 @@ const HomeScreen = () => {
                                             key={reminder.reminderId}
                                             object={reminder}
                                             onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                            onDelete={() => deleteCurrentReminder(reminder.reminderId)}
                                         />
                                     ))
                                 )}
@@ -350,7 +363,7 @@ const HomeScreen = () => {
                                 object={reminder}
                                 onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
                                 onTextBoxPress={() => fetchReminder(reminder.reminderId)}
-                                onDelete={() => console.log('Deleted')}
+                                onDelete={() => deleteCurrentReminder(reminder.reminderId)}
                             />
                         ))
                     )}
