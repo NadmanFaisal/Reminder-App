@@ -7,25 +7,25 @@ import DoneCancelButton from './DoneCancelButton'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 type CreateReminderProps = {
-    visible?: boolean;
-    onClose: () => void;
-    onDone?: () => void;
-    title: string;
-    setTitle: (val: string) => void;
-    description: string;
-    setDescription: (val: string) => void;
-    displayDate: Date;
-    displayTime: Date;
-    showDatePicker: boolean;
-    showTimePicker: boolean;
-    setShowDatePicker: (val: boolean) => void;
-    setShowTimePicker: (val: boolean) => void;
-    remindDate: Date;
-    setRemindDate: (val: Date) => void;
-    remindTime: Date;
-    setRemindTime: (val: Date) => void;
-    setDisplayDate: (val: Date) => void;
-    setDisplayTime: (val: Date) => void;
+  visible?: boolean;
+  onClose: () => void;
+  onDone?: () => void;
+  title: string;
+  setTitle: (val: string) => void;
+  description: string;
+  setDescription: (val: string) => void;
+  displayDate: Date;
+  displayTime: Date;
+  showDatePicker: boolean;
+  showTimePicker: boolean;
+  setShowDatePicker: (val: boolean) => void;
+  setShowTimePicker: (val: boolean) => void;
+  remindDate: Date;
+  setRemindDate: (val: Date) => void;
+  remindTime: Date;
+  setRemindTime: (val: Date) => void;
+  setDisplayDate: (val: Date) => void;
+  setDisplayTime: (val: Date) => void;
   };
   
 
@@ -60,6 +60,7 @@ export const CreateReminderModal = (props: CreateReminderProps) => {
                     value={props.remindDate}
                     mode="date"
                     display="spinner"
+                    themeVariant='light'
                     onChange={(event, date) => {
                         props.setShowDatePicker(false)
                       if (date) {
@@ -74,6 +75,7 @@ export const CreateReminderModal = (props: CreateReminderProps) => {
                     value={props.remindTime}
                     mode="time"
                     display="spinner"
+                    themeVariant='light'
                     onChange={(event, time) => {
                         props.setShowTimePicker(false)
                       if (time) {
