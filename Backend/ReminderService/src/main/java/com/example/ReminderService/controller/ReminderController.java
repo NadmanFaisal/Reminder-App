@@ -37,6 +37,12 @@ public class ReminderController {
         return reminderService.getUserReminders(userEmail);
     }
 
+    @GetMapping("/GetReminder")
+    @ResponseStatus(HttpStatus.OK)
+    public ReminderResponse getReminder(@RequestParam String reminderId) {
+        return reminderService.getReminder(reminderId);
+    }
+
     @PatchMapping("/UpdateCompleteStatus")
     @ResponseStatus(HttpStatus.OK)
     public void updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {

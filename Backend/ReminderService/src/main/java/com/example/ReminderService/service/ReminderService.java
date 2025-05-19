@@ -1,8 +1,8 @@
 package com.example.ReminderService.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
@@ -93,6 +93,23 @@ public class ReminderService {
                 reminder.isDeleted()
             ))
             .toList();
+    }
+
+    public ReminderResponse getReminder(String reminderId) {
+        Optional <Reminder> fetchedReminder = getReminderById(reminderId);
+        Reminder reminder = fetchedReminder.get();
+
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
     }
 
     public Optional<Reminder> getReminderById(String reminderId) {

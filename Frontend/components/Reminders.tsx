@@ -9,9 +9,10 @@ type ReminderProp = {
         completed?: boolean;
     };
     onPress?: () => void;
+    onTextBoxPress?: () => void;
 };
 
-export const Reminder = ({ object, onPress }: ReminderProp) => {
+export const Reminder = ({ object, onPress, onTextBoxPress }: ReminderProp) => {
     const slideAnim = useRef(new Animated.Value(0)).current;
     const opacityAnim = useRef(new Animated.Value(1)).current;
 
@@ -43,10 +44,12 @@ export const Reminder = ({ object, onPress }: ReminderProp) => {
             ]}
         >
             <View style={styles.mainContainer}>
-                <Pressable onPress={handlePress} style={styles.checkbox}>
+                <Pressable style={styles.checkbox} onPress={handlePress} >
                     {object.completed && <View style={styles.innerDot} />}
                 </Pressable>
-                <Text>{object.title}</Text>
+                <Pressable style={styles.textContainer} onPress={onTextBoxPress}>
+                    <Text>{object.title}</Text>
+                </Pressable>
             </View>
         </Animated.View>
     );
@@ -68,6 +71,13 @@ const styles = StyleSheet.create({
         width: '90%',
         alignItems: 'center',
         borderWidth: 4,
+    },
+    textContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '85%',
+        height: '100%',
+        alignItems: 'center',
     },
     checkbox: {
         width: 24,

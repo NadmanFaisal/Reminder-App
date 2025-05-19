@@ -8,7 +8,7 @@ import AddButton from "@/components/AddButton";
 import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
-import { createReminder, getUserReminders, updateReminderCompleteStatus } from "@/api/reminder";
+import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder } from "@/api/reminder";
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -138,7 +138,19 @@ const HomeScreen = () => {
         } catch (err: any) {
             alert("Changing reminder status failed", err.message || "Something went wrong");
         }
-    };
+    }
+
+    const fetchReminder = async (reminderId: string) => {
+        console.log('get reminder pressed')
+        try {
+            const response = await getReminder(reminderId, token)
+            if(response.status === 200) {
+                console.log(response.data)
+            }
+        } catch (err: any) {
+            alert("Getting reminder failed", err.message || "Something went wrong");
+        }
+    }
 
     return (
         <SafeAreaView style={styles.mainContainer}>
@@ -188,6 +200,7 @@ const HomeScreen = () => {
                                             key={reminder.reminderId}
                                             object={reminder}
                                             onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                            onTextBoxPress={() => fetchReminder(reminder.reminderId)}
                                         />
                                     ))
                                 )}
@@ -228,6 +241,7 @@ const HomeScreen = () => {
                                 key={reminder.reminderId}
                                 object={reminder}
                                 onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                onTextBoxPress={() => fetchReminder(reminder.reminderId)}
                             />
                         ))
                     )}
