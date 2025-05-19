@@ -8,7 +8,7 @@ import AddButton from "@/components/AddButton";
 import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
-import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder } from "@/api/reminder";
+import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder } from "@/api/reminder";
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -32,6 +32,8 @@ const HomeScreen = () => {
     
     const [createReminderModalVisible, setCreateReminderModalVisible] = useState(false)
     const [showAllModalVisible, setShowAllModalVisible] = useState(false)
+
+    const [reminderId, setReminderId] = useState('')
 
     // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
 
@@ -116,6 +118,7 @@ const HomeScreen = () => {
     }
 
     const resetReminderModalFields = () => {
+        setReminderId('')
         setTitle('')
         setDescription('')
         setDisplayDate(new Date())
@@ -176,10 +179,10 @@ const HomeScreen = () => {
         try {
             const response = await getReminder(reminderId, token)
             if(response.status === 200) {
-                console.log(response.data)
                 const data = response.data;
                 const reminderDate = new Date(data.remindAt);
-
+                
+                setReminderId(data.reminderId)
                 setTitle(data.title);
                 setDescription(data.description);
                 setRemindDate(reminderDate);
@@ -199,7 +202,7 @@ const HomeScreen = () => {
         }
     }
 
-    const patchReminder = () => {
+    const patchReminder = async () => {
         const mergedCurrentRemindAt = new Date(remindDate);
         mergedCurrentRemindAt.setHours(remindTime.getHours());
         mergedCurrentRemindAt.setMinutes(remindTime.getMinutes());
@@ -212,10 +215,7 @@ const HomeScreen = () => {
         mergedOriginalRemindAt.setSeconds(0);
         mergedOriginalRemindAt.setMilliseconds(0);
     
-        const hasChanged =
-            title !== originalTitle ||
-            description !== originalDescription ||
-            mergedCurrentRemindAt.getTime() !== mergedOriginalRemindAt.getTime();
+        const hasChanged = title !== originalTitle || description !== originalDescription || mergedCurrentRemindAt.getTime() !== mergedOriginalRemindAt.getTime();
     
         if (!hasChanged) {
             alert("No changes made to this reminder.");
@@ -223,11 +223,20 @@ const HomeScreen = () => {
             return;
         }
     
-        console.log("Fields have changed. Proceeding to patch reminder...");
-    
-        setViewReminderModalVisible(false);
+        console.log("Fields have changed. Patchine.");
+
+        try {
+            const response = await updateReminder(reminderId, title, description, mergedCurrentRemindAt, token)
+            if(response.status === 200) {
+                console.log('Patched successfully!')
+                setRefreshKey(prev => prev + 1);
+            }
+        } catch (err: any) {
+            alert("Updating reminder", err.message || "Something went wrong");
+        }
+        
         resetReminderModalFields();
-        setRefreshKey(prev => prev + 1);
+        setViewReminderModalVisible(false);
     };
 
     return (

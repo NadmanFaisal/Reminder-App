@@ -78,6 +78,21 @@ public class ReminderService {
         log.info("Reminder status changed successfully!");
     }
 
+    public void updateReminder(ReminderRequest reminderRequest) {
+        Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
+
+        if (fetchedReminder.isEmpty()) {
+            throw new RuntimeException("Reminder not found");
+        }
+
+        Reminder reminder = fetchedReminder.get();
+        reminder.setTitle(reminderRequest.title());
+        reminder.setDescription(reminderRequest.description());
+        reminder.setRemindAt(reminderRequest.remindAt());
+        reminder.setLastModified(new Date());
+        reminderRepository.save(reminder);
+    }
+
     public List<ReminderResponse> getUserReminders(String userEmail) {
         return reminderRepository.findAllByUserEmail(userEmail)
             .stream()

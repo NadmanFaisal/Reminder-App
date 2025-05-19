@@ -70,3 +70,20 @@ export async function updateReminderCompleteStatus(reminderId: string, token: st
     throw new Error(message)
   }
 }
+
+export async function updateReminder(reminderId: string, title: string, description: string, remindAt: Date, token: string) {
+  try {
+    const response = await api.patch('ReminderService/UpdateReminder', {
+      reminderId, title, description, remindAt
+    },
+    { headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return response
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      `Could not update reminder.`
+    throw new Error(message)
+  }
+}
