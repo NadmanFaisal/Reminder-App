@@ -350,6 +350,7 @@ const HomeScreen = () => {
                                 object={reminder}
                                 onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
                                 onTextBoxPress={() => fetchReminder(reminder.reminderId)}
+                                onDelete={() => console.log('Deleted')}
                             />
                         ))
                     )}
