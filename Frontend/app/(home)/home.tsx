@@ -8,7 +8,7 @@ import AddButton from "@/components/AddButton";
 import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
-import { createReminder, getUserReminders, updateReminderCompleteStatus } from "@/api/reminder";
+import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder } from "@/api/reminder";
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -32,6 +32,20 @@ const HomeScreen = () => {
     
     const [createReminderModalVisible, setCreateReminderModalVisible] = useState(false)
     const [showAllModalVisible, setShowAllModalVisible] = useState(false)
+
+    const [reminderId, setReminderId] = useState('')
+
+    // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
+
+    const [originalTitle, setOriginalTitle] = useState('')
+    const [originalDescription, setOriginalDescription] = useState('')
+
+    const [originalRemindDate, setoriginalRemindDate] = useState(new Date())
+    const [originalRemindTime, setoriginalRemindTime] = useState(new Date())
+
+    // ========================================================
+
+    const [viewReminderModalVisible, setViewReminderModalVisible] = useState(false)
     
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -103,6 +117,25 @@ const HomeScreen = () => {
         router.dismissTo('/login')
     }
 
+    const resetReminderModalFields = () => {
+        setReminderId('')
+        setTitle('')
+        setDescription('')
+        setDisplayDate(new Date())
+        setDisplayTime(new Date())
+        setRemindDate(new Date())
+        setRemindTime(new Date())
+
+        // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
+
+        setOriginalTitle('');
+        setOriginalDescription('');
+        setoriginalRemindDate(new Date());
+        setoriginalRemindTime(new Date());
+
+        // ========================================================
+    }
+
     const postReminder = async () => {
         try {
             if(title === '') {
@@ -119,7 +152,8 @@ const HomeScreen = () => {
             const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
             if(response) {
                 console.log(response)
-                setCreateReminderModalVisible(false)
+                setViewReminderModalVisible(false)
+                resetReminderModalFields()
                 setRefreshKey(prev => prev + 1)
             }
         } catch (err: any) {
@@ -138,6 +172,71 @@ const HomeScreen = () => {
         } catch (err: any) {
             alert("Changing reminder status failed", err.message || "Something went wrong");
         }
+    }
+
+    const fetchReminder = async (reminderId: string) => {
+        console.log('get reminder pressed')
+        try {
+            const response = await getReminder(reminderId, token)
+            if(response.status === 200) {
+                const data = response.data;
+                const reminderDate = new Date(data.remindAt);
+                
+                setReminderId(data.reminderId)
+                setTitle(data.title);
+                setDescription(data.description);
+                setRemindDate(reminderDate);
+                setRemindTime(reminderDate);
+                setDisplayDate(reminderDate);
+                setDisplayTime(reminderDate);
+
+                setOriginalTitle(data.title)
+                setOriginalDescription(data.description)
+                setoriginalRemindDate(reminderDate)
+                setoriginalRemindTime(reminderDate)
+
+                setViewReminderModalVisible(true);
+            }
+        } catch (err: any) {
+            alert("Getting reminder failed", err.message || "Something went wrong");
+        }
+    }
+
+    const patchReminder = async () => {
+        const mergedCurrentRemindAt = new Date(remindDate);
+        mergedCurrentRemindAt.setHours(remindTime.getHours());
+        mergedCurrentRemindAt.setMinutes(remindTime.getMinutes());
+        mergedCurrentRemindAt.setSeconds(0);
+        mergedCurrentRemindAt.setMilliseconds(0);
+    
+        const mergedOriginalRemindAt = new Date(originalRemindDate);
+        mergedOriginalRemindAt.setHours(originalRemindTime.getHours());
+        mergedOriginalRemindAt.setMinutes(originalRemindTime.getMinutes());
+        mergedOriginalRemindAt.setSeconds(0);
+        mergedOriginalRemindAt.setMilliseconds(0);
+    
+        const hasChanged = title !== originalTitle || description !== originalDescription || mergedCurrentRemindAt.getTime() !== mergedOriginalRemindAt.getTime();
+    
+        if (!hasChanged) {
+            alert("No changes made to this reminder.");
+            setViewReminderModalVisible(false)
+            return;
+        }
+    
+        console.log("Fields have changed. Patchine.");
+
+        try {
+            const response = await updateReminder(reminderId, title, description, mergedCurrentRemindAt, token)
+            if(response.status === 200) {
+                console.log('Patched successfully!')
+                setRefreshKey(prev => prev + 1);
+            }
+        } catch (err: any) {
+            alert("Updating reminder", err.message || "Something went wrong");
+        }
+        
+        resetReminderModalFields();
+        setViewReminderModalVisible(false);
     };
 
     return (
@@ -145,8 +244,30 @@ const HomeScreen = () => {
 
             <CreateReminderModal
                 visible={createReminderModalVisible}
-                onClose={() => setCreateReminderModalVisible(false)}
+                onClose={() => {setCreateReminderModalVisible(false); resetReminderModalFields()}}
                 onDone={postReminder}
+                title={title}
+                setTitle={setTitle}
+                description={description}
+                setDescription={setDescription}
+                displayDate={displayDate}
+                displayTime={displayTime}
+                showDatePicker={showDatePicker}
+                showTimePicker={showTimePicker}
+                setShowDatePicker={setShowDatePicker}
+                setShowTimePicker={setShowTimePicker}
+                remindDate={remindDate}
+                setRemindDate={setRemindDate}
+                remindTime={remindTime}
+                setRemindTime={setRemindTime}
+                setDisplayDate={setDisplayDate}
+                setDisplayTime={setDisplayTime}
+            />
+
+            <CreateReminderModal
+                visible={viewReminderModalVisible}
+                onClose={() => {setViewReminderModalVisible(false); resetReminderModalFields()}}
+                onDone={patchReminder}
                 title={title}
                 setTitle={setTitle}
                 description={description}
@@ -228,6 +349,7 @@ const HomeScreen = () => {
                                 key={reminder.reminderId}
                                 object={reminder}
                                 onPress={() => changeReminderCompletedStatus(reminder.reminderId)}
+                                onTextBoxPress={() => fetchReminder(reminder.reminderId)}
                             />
                         ))
                     )}

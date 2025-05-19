@@ -35,6 +35,25 @@ export async function getUserReminders(email: string, token: string) {
   }
 }
 
+export async function getReminder(reminderId: string, token: string) {
+  try {
+    const response = await api.get('/ReminderService/GetReminder', {
+      params: {
+        reminderId: reminderId
+      },
+      headers: { 'Authorization': `Bearer ${token}` }
+    }
+  )
+    return response
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      `Could not get reminder.`
+    throw new Error(message)
+  }
+}
+
 export async function updateReminderCompleteStatus(reminderId: string, token: string) {
   try {
     const response = await api.patch('/ReminderService/UpdateCompleteStatus', {
@@ -48,6 +67,23 @@ export async function updateReminderCompleteStatus(reminderId: string, token: st
       err?.response?.data?.message ||
       err?.message ||
       `Could not update reminder complete status`
+    throw new Error(message)
+  }
+}
+
+export async function updateReminder(reminderId: string, title: string, description: string, remindAt: Date, token: string) {
+  try {
+    const response = await api.patch('ReminderService/UpdateReminder', {
+      reminderId, title, description, remindAt
+    },
+    { headers: { 'Authorization': `Bearer ${token}` }
+  })
+  return response
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      `Could not update reminder.`
     throw new Error(message)
   }
 }
