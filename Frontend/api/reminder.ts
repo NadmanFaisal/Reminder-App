@@ -87,3 +87,20 @@ export async function updateReminder(reminderId: string, title: string, descript
     throw new Error(message)
   }
 }
+
+export async function deleteReminder(reminderId: string, token: string) {
+  try {
+    const response = await api.patch('/ReminderService/ChangeReminderDeleteStatus', {
+      reminderId,
+    },
+    { headers: { 'Authorization': `Bearer ${token}` } }
+  )
+    return response
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      `Could not delete reminder`
+    throw new Error(message)
+  }
+}
