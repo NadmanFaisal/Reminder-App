@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Pressable, ViewStyle, DimensionValue } from 'react-native'
+import { Text, StyleSheet, Pressable, ViewStyle, DimensionValue } from 'react-native'
 
 type ButtonProps = {
     height?: DimensionValue,

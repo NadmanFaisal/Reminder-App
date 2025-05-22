@@ -1,13 +1,19 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { DimensionValue, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 type textProp = {
-  text: string
+  text: string,
+  height?: DimensionValue,
+  width?: DimensionValue,
 }
 
 const IntroBox = (props: textProp) => {
+  const dynamicStyle: ViewStyle = {
+    height: props.height ?? '50%',
+    width: props.width ?? '75%'
+  }
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, dynamicStyle]}>
             <Text style={styles.logoText}>{props.text}</Text>
         </View>
     )
@@ -20,8 +26,8 @@ const styles = StyleSheet.create({
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      height: '50%',
-      width: '75%',
+      // height: '50%',
+      // width: '75%',
       borderWidth: 4,
     },
     logoText: {

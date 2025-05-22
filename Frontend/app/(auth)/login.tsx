@@ -3,7 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import alert from '../../components/Alert';
 import IntroBox from '@/components/IntroBox';
 import { InputField } from '@/components/InputField';
-import SubmissionButton from '@/components/Button';
+import { SubmissionButton } from '@/components/Buttons';
 import OAuthButton from '@/components/OAuthButton';
 import { loginUser } from '@/api/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage'
