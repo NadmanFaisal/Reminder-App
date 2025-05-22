@@ -7,7 +7,7 @@ type buttonProp = {
     onPress?: () => void;
 }
 
-const SubmissionButton = (props: buttonProp) => {
+export const SubmissionButton = (props: buttonProp) => {
     return (
         <Pressable style={styles.container} onPress={props.onPress}>
             <Text>{props.text}!</Text>
@@ -27,4 +27,3 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SubmissionButton;

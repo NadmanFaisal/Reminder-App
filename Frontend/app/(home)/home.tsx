@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image } from "react-native";
+import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image, Settings } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
@@ -12,6 +12,7 @@ import { createReminder, getUserReminders, updateReminderCompleteStatus, getRemi
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
+import SettingsImage from "../../assets/images/settings-icon.svg"
 
 // To avoid errors when passing reminderId as keys to a map
 type ReminderObject = {
@@ -333,8 +334,18 @@ const HomeScreen = () => {
             </Modal>
 
             <View style={styles.introContainer}>
-                <IntroBox text={`Welcome, ${username}`}/>
-                <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable>
+                <View style={styles.leftIntroContainer}>
+
+                </View>
+                <View style={styles.middleIntroContainer}>
+                    <IntroBox text={`Welcome, ${username}`} width={'100%'}/>
+                </View>
+                <View style={styles.rightIntroContainer}>
+                    <Pressable style={styles.settingsContainer} onPress={() => { console.log('Settings pressed'); router.push('/(settings)/settings') } }>
+                        <SettingsImage width={'50%'} height={'50%'} />
+                    </Pressable>
+                </View>
+                {/* <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable> */}
             </View>
 
             <View style={styles.calendarContainer}>
@@ -387,10 +398,42 @@ const styles = StyleSheet.create({
     },
     introContainer: {
         display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '25%',
+    },
+    leftIntroContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        width: '15%'
+    },
+    middleIntroContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        height: '100%',
+        width: '70%'
+    },
+    rightIntroContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        height: '100%',
+        width: '15%'
+    },
+    settingsContainer: {
+        display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         height: '25%',
+        width: '100%'
     },
     calendarContainer: {
         display: 'flex',
