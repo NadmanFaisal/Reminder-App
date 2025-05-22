@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, Text, Image } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import GoogleLogo from "../assets/images/Google.svg"
 
 

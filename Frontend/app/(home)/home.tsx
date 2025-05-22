@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image, Settings } from "react-native";
+import { View, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
@@ -25,7 +25,7 @@ type ReminderObject = {
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
-    const [reminders, setReminders] = useState<ReminderObject[]>([])
+    // const [reminders, setReminders] = useState<ReminderObject[]>([])
     const [completedReminders, setCompletedReminders] = useState<ReminderObject[]>([]);
     const [incompletedReminders, setIncompletedReminders] = useState<ReminderObject[]>([]);
 
@@ -103,7 +103,7 @@ const HomeScreen = () => {
 
                     setCompletedReminders(completed)
                     setIncompletedReminders(incompleted)
-                    setReminders(sortedReminders)
+                    // setReminders(sortedReminders)
                     console.log(response.data)
                 }
             } catch (err: any) {
@@ -113,10 +113,10 @@ const HomeScreen = () => {
         fetchUserReminders()
     }, [email, token, refreshKey])
 
-    const signOut = async () => {
-        await AsyncStorage.removeItem("token");
-        router.dismissTo('/login')
-    }
+    // const signOut = async () => {
+    //     await AsyncStorage.removeItem("token");
+    //     router.dismissTo('/login')
+    // }
 
     const resetReminderModalFields = () => {
         setSelectedReminderId('')
@@ -345,7 +345,6 @@ const HomeScreen = () => {
                         <SettingsImage width={'50%'} height={'50%'} />
                     </Pressable>
                 </View>
-                {/* <Pressable onPress={signOut}><Text>Sign Out</Text></Pressable> */}
             </View>
 
             <View style={styles.calendarContainer}>

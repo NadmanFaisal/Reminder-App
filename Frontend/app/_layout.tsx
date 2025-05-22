@@ -7,10 +7,32 @@ export default function RootLayout() {
       headerShown: false,
     }}
     >
-      <Stack.Screen name="(home)/home" options={{ title: "Home", headerShown: false, headerBackVisible: false }}/>
+      <Stack.Screen
+        name="(auth)/login"
+        options = {{
+          gestureEnabled: false,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="(auth)/signup"
+        options = {{
+          gestureEnabled: false,
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="(home)/home" 
+        options = {{ 
+          title: "Home", 
+          headerShown: false, 
+          headerBackVisible: false,
+          gestureEnabled: false,
+        }}
+      />
       <Stack.Screen 
         name="(settings)/settings" 
-        options={{ 
+        options = {{ 
           title: "Settings",
           headerStyle: {
             backgroundColor: '#FFFBDE'
