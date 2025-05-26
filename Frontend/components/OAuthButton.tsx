@@ -1,18 +1,19 @@
 import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import GoogleLogo from "../assets/images/Google.svg"
 
 
 type buttonProp = {
     text: string,
+    onPress?: () => void,
 }
 
 const OAuthButton = (props: buttonProp) => {
     return (
-        <View style={styles.container}>
+        <Pressable style={styles.container} onPress={props.onPress}>
             <GoogleLogo />
-            <Text>{props.text}!</Text>
-        </View>
+            <Text>{props.text}</Text>
+        </Pressable>
     )
 }
 
