@@ -39,14 +39,22 @@ public class Routes {
                     req -> HandlerFunctions.http("http://localhost:8083").handle(req)
                 )
             )
+            // .route(
+            //     RequestPredicates.path("/NotificationService/**")
+            //         .and(RequestPredicates.method(HttpMethod.OPTIONS)
+            //             .or(RequestPredicates.method(HttpMethod.POST))
+            //             .or(RequestPredicates.method(HttpMethod.GET))),
+            //     request -> jwtFilter.filter(request,
+            //         req -> HandlerFunctions.http("http://localhost:8084").handle(req)
+            //     )
+            // )
             .route(
                 RequestPredicates.path("/NotificationService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
                         .or(RequestPredicates.method(HttpMethod.POST))
-                        .or(RequestPredicates.method(HttpMethod.GET))),
-                request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://localhost:8084").handle(req)
-                )
+                        .or(RequestPredicates.method(HttpMethod.GET))
+                        .or(RequestPredicates.method(HttpMethod.PATCH))),
+                HandlerFunctions.http("http://localhost:8084")
             )
             .route(
                 RequestPredicates.path("/ReminderService/**")
@@ -58,14 +66,6 @@ public class Routes {
                     req -> HandlerFunctions.http("http://localhost:8085").handle(req)
                 )
             )
-            // .route(
-            //     RequestPredicates.path("/ReminderService/**")
-            //         .and(RequestPredicates.method(HttpMethod.OPTIONS)
-            //             .or(RequestPredicates.method(HttpMethod.POST))
-            //             .or(RequestPredicates.method(HttpMethod.GET))
-            //             .or(RequestPredicates.method(HttpMethod.PATCH))),
-            //     HandlerFunctions.http("http://localhost:8085")
-            // )
             .build();
     }   
 }
