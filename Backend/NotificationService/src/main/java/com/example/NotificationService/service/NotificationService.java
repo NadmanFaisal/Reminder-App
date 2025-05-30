@@ -21,8 +21,9 @@ public class NotificationService {
     public NotificationResponse createNotification(NotificationRequest notificationRequest) {
         Notification notification = Notification.builder()
             .status(notificationRequest.status())
-            .title(notificationRequest.title())
             .type(notificationRequest.type())
+            .userEmail(notificationRequest.userEmail())
+            .title(notificationRequest.title())
             .description(notificationRequest.description())
             .notifyTime(notificationRequest.notifyTime())
             .build();
@@ -30,10 +31,11 @@ public class NotificationService {
         log.info("Notification created successfully!");
         return new NotificationResponse(
             notification.getNotificationId(), 
+            notification.getStatus(),
+            notification.getType(),
+            notification.getUserEmail(),
             notification.getTitle(),
             notification.getDescription(),
-            notification.getType(),
-            notification.getStatus(),
             notification.getNotifyTime()
         );
     }
@@ -43,10 +45,11 @@ public class NotificationService {
             .stream()
             .map(notification -> new NotificationResponse(
                 notification.getNotificationId(), 
+                notification.getStatus(),
+                notification.getType(),
+                notification.getUserEmail(),
                 notification.getTitle(),
                 notification.getDescription(),
-                notification.getType(),
-                notification.getStatus(),
                 notification.getNotifyTime()
             ))
             .toList();

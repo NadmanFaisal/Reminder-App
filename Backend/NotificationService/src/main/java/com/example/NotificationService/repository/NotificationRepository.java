@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.Query;
 import com.example.NotificationService.model.Notification;
 
 public interface NotificationRepository extends MongoRepository<Notification, String> {
-    @Query("{ 'userEmail': ?0, 'deleted': false }")
+    @Query("{ 'userEmail': ?0 }")
     List<Notification> findNotificationsByEmail(String userEmail);
 }

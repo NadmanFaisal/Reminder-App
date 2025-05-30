@@ -38,6 +38,7 @@ public class ReminderController {
             null,
             null,
             null,
+            reminderRequest.userEmail(),
             reminderRequest.title(), 
             reminderRequest.description(), 
             reminderRequest.remindAt()

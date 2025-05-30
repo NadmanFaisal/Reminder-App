@@ -22,6 +22,7 @@ public class Notification {
     private String status;
     private String title;
     private String type;
+    private String userEmail;
     private String description;
     private Date notifyTime;
 }
