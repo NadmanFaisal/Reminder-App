@@ -9,6 +9,8 @@ import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder, deleteReminder } from "@/api/reminder";
+import { getUserNotifications } from "@/api/notification";
+
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -35,6 +37,8 @@ const HomeScreen = () => {
     const [showAllModalVisible, setShowAllModalVisible] = useState(false)
 
     const [selectedReminderId, setSelectedReminderId] = useState('')
+
+    const [notifications, setNotifications] = useState([])
 
     // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
 
@@ -104,13 +108,30 @@ const HomeScreen = () => {
                     setCompletedReminders(completed)
                     setIncompletedReminders(incompleted)
                     // setReminders(sortedReminders)
-                    console.log(response.data)
+                    console.log(`User's reminders received:`, response.data)
                 }
             } catch (err: any) {
                 console.log('Reminders could not be fetched:', err.message)
             }
         }
         fetchUserReminders()
+    }, [email, token, refreshKey])
+
+    useEffect(() => {
+        const fetchUserNotifications = async () => {
+            if (!email || !token) return
+            try {
+                console.log(email)
+                const response = await getUserNotifications(email, token)
+                if(response.data) {
+                    setNotifications(response.data)
+                    console.log('Notifications received: ', response.data)
+                }
+            } catch (err: any) {
+                console.log('Notifications could not be fetched:', err.message)
+            }
+        }
+        fetchUserNotifications()
     }, [email, token, refreshKey])
 
     // const signOut = async () => {

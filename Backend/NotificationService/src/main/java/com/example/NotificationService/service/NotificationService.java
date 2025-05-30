@@ -38,8 +38,8 @@ public class NotificationService {
         );
     }
 
-    public List<NotificationResponse> getAllNotifications() {
-        return notificationRepository.findAll()
+    public List<NotificationResponse> getAllUserNotifications(String email) {
+        return notificationRepository.findNotificationsByEmail(email)
             .stream()
             .map(notification -> new NotificationResponse(
                 notification.getNotificationId(), 
