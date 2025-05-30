@@ -97,26 +97,16 @@ const HomeScreen = () => {
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        let interval = setInterval(() => {
-            const now = new Date()
-            setCurrentDate(new Date().toLocaleString())
-            console.log('current time:' ,currentDate)
 
-            userNotifications.forEach((notification) => {
-                const notifTime = new Date(notification.notifyTime);
-                console.log('Notification time:', notifTime)
-                const timeDiff = Math.abs(now.getTime() - notifTime.getTime());
-
-                if(timeDiff < 2000 && !triggeredNotifications.current.has(notification.notificationId)) {
-                    console.log('notif sent')
-                    triggeredNotifications.current.add(notification.notificationId);
-                    schedulePushNotification(notification.title, notification.description)
-                }
-            })
-        }, 1000)
+        userNotifications.forEach((notification) => {
+            if(!triggeredNotifications.current.has(notification.notificationId)) {
+                console.log('notif set')
+                triggeredNotifications.current.add(notification.notificationId);
+                schedulePushNotification(notification.title, notification.description, notification.notifyTime)
+            }
+        })
         
-        return () => {clearInterval(interval)}
-    })
+    }, [userNotifications])
 
     useEffect(() => {
         registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
@@ -141,7 +131,7 @@ const HomeScreen = () => {
         }, 
     []);
 
-    async function schedulePushNotification(notiTitle: string, description: string) {
+    async function schedulePushNotification(notiTitle: string, description: string, notifyTime: Date) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: notiTitle,
@@ -149,8 +139,8 @@ const HomeScreen = () => {
           data: { data: 'goes here', test: { test1: 'more data' } },
         },
         trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: 2,
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: new Date(notifyTime),
         },
       });
     }
