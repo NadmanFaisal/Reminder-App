@@ -153,7 +153,7 @@ const HomeScreen = () => {
             const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
             if(response) {
                 console.log(response)
-                setViewReminderModalVisible(false)
+                setCreateReminderModalVisible(false)
                 resetReminderModalFields()
                 setRefreshKey(prev => prev + 1)
             }

@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
-    public NotificationResponse createReminder(NotificationRequest notificationRequest) {
+    public NotificationResponse createNotification(NotificationRequest notificationRequest) {
         Notification notification = Notification.builder()
             .status(notificationRequest.status())
             .title(notificationRequest.title())

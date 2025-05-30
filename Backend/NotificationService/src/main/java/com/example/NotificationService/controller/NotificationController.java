@@ -21,7 +21,7 @@ public class NotificationController {
 
     @PostMapping("/CreateNotification")
     @ResponseStatus(HttpStatus.CREATED)
-    public NotificationResponse createUser(@RequestBody NotificationRequest notificationRequest) {
-        return notificationService.createReminder(notificationRequest);
+    public NotificationResponse createNotification(@RequestBody NotificationRequest notificationRequest) {
+        return notificationService.createNotification(notificationRequest);
     }
 }

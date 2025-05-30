@@ -2,6 +2,7 @@ package com.example.ReminderService.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.ReminderService.dto.NotificationRequest;
 import com.example.ReminderService.dto.ReminderRequest;
 import com.example.ReminderService.dto.ReminderResponse;
+import com.example.ReminderService.feign.ReminderInterface;
 import com.example.ReminderService.service.ReminderService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +28,22 @@ public class ReminderController {
 
     private final ReminderService reminderService;
 
+    @Autowired
+    private final ReminderInterface reminderInterface;
+
     @PostMapping("/CreateReminder")
     @ResponseStatus(HttpStatus.CREATED)
     public ReminderResponse createUser(@RequestBody ReminderRequest reminderRequest) {
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            null,
+            null,
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.remindAt()
+        );
+
+        reminderInterface.createNotification(notificationRequest);
         return reminderService.createReminder(reminderRequest);
     }
 
