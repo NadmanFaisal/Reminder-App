@@ -14,4 +14,8 @@ public interface ReminderInterface {
     @PostMapping("/NotificationService/CreateNotification")
     @ResponseStatus(HttpStatus.CREATED)
     public NotificationResponse createNotification(@RequestBody NotificationRequest notificationRequest);
+
+    // @PutMapping("/NotificationService/UpdateNotification")
+    // @ResponseStatus(HttpStatus.OK)
+    // public void updateNotification(@RequestBody NotificationRequest notificationRequest);
 }

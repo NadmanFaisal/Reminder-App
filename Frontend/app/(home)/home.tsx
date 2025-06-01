@@ -99,10 +99,10 @@ const HomeScreen = () => {
     useEffect(() => {
 
         userNotifications.forEach((notification) => {
-            if(!triggeredNotifications.current.has(notification.notificationId)) {
-                console.log('notif set')
+            if(notification.notifyTime < (new Date()) || !triggeredNotifications.current.has(notification.notificationId)) {
                 triggeredNotifications.current.add(notification.notificationId);
                 schedulePushNotification(notification.title, notification.description, notification.notifyTime)
+                console.log('notif set')
             }
         })
         

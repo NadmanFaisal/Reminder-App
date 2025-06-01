@@ -4,6 +4,7 @@ import java.util.Date;
 
 public record NotificationResponse(
     String notificationId, 
+    String reminderId,
     String status, 
     String type, 
     String userEmail, 

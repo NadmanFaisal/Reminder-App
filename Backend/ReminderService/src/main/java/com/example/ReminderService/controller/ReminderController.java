@@ -34,8 +34,11 @@ public class ReminderController {
     @PostMapping("/CreateReminder")
     @ResponseStatus(HttpStatus.CREATED)
     public ReminderResponse createUser(@RequestBody ReminderRequest reminderRequest) {
+        ReminderResponse reminderResponse = reminderService.createReminder(reminderRequest);
+        
         NotificationRequest notificationRequest = new NotificationRequest(
             null,
+            reminderResponse.reminderId(),
             null,
             null,
             reminderRequest.userEmail(),
@@ -45,7 +48,7 @@ public class ReminderController {
         );
 
         reminderInterface.createNotification(notificationRequest);
-        return reminderService.createReminder(reminderRequest);
+        return reminderResponse;
     }
 
     @GetMapping("/GetUserReminders")
@@ -75,6 +78,17 @@ public class ReminderController {
     @PatchMapping("/UpdateReminder")
     @ResponseStatus(HttpStatus.OK)
     public void updateReminder(@RequestBody ReminderRequest reminderRequest) {
+        // NotificationRequest notificationRequest = new NotificationRequest(
+        //     null,
+        //     null,
+        //     null,
+        //     reminderRequest.userEmail(),
+        //     reminderRequest.title(), 
+        //     reminderRequest.description(), 
+        //     reminderRequest.remindAt()
+        // );
+
+        // reminderInterface.updateNotification(notificationRequest);
         reminderService.updateReminder(reminderRequest);
     }
 

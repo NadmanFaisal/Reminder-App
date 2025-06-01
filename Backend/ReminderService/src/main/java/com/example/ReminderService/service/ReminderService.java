@@ -100,9 +100,16 @@ public class ReminderService {
         }
 
         Reminder reminder = fetchedReminder.get();
-        reminder.setTitle(reminderRequest.title());
-        reminder.setDescription(reminderRequest.description());
-        reminder.setRemindAt(reminderRequest.remindAt());
+        if (reminderRequest.title() != null) {
+            reminder.setTitle(reminderRequest.title());
+        }
+        if (reminderRequest.description() != null) {
+            reminder.setDescription(reminderRequest.description());
+        }
+        if (reminderRequest.remindAt() != null) {
+            reminder.setRemindAt(reminderRequest.remindAt());
+        }
+    
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
     }
