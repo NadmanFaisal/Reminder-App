@@ -77,19 +77,21 @@ public class ReminderController {
 
     @PatchMapping("/UpdateReminder")
     @ResponseStatus(HttpStatus.OK)
-    public void updateReminder(@RequestBody ReminderRequest reminderRequest) {
-        // NotificationRequest notificationRequest = new NotificationRequest(
-        //     null,
-        //     null,
-        //     null,
-        //     reminderRequest.userEmail(),
-        //     reminderRequest.title(), 
-        //     reminderRequest.description(), 
-        //     reminderRequest.remindAt()
-        // );
+    public ReminderResponse updateReminder(@RequestBody ReminderRequest reminderRequest) {
+        
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            reminderRequest.reminderId(),
+            null,
+            null,
+            reminderRequest.userEmail(),
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.remindAt()
+        );
 
-        // reminderInterface.updateNotification(notificationRequest);
-        reminderService.updateReminder(reminderRequest);
+        reminderInterface.updateNotification(notificationRequest);
+        return reminderService.updateReminder(reminderRequest);
     }
 
 

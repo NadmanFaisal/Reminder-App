@@ -3,6 +3,7 @@ package com.example.ReminderService.feign;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -15,7 +16,7 @@ public interface ReminderInterface {
     @ResponseStatus(HttpStatus.CREATED)
     public NotificationResponse createNotification(@RequestBody NotificationRequest notificationRequest);
 
-    // @PutMapping("/NotificationService/UpdateNotification")
-    // @ResponseStatus(HttpStatus.OK)
-    // public void updateNotification(@RequestBody NotificationRequest notificationRequest);
+    @PutMapping("/NotificationService/UpdateNotification")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateNotification(@RequestBody NotificationRequest notificationRequest);
 }

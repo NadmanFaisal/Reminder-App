@@ -92,7 +92,7 @@ public class ReminderService {
         log.info("Reminder deleted status changed successfully!");
     }
 
-    public void updateReminder(ReminderRequest reminderRequest) {
+    public ReminderResponse updateReminder(ReminderRequest reminderRequest) {
         Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
 
         if (fetchedReminder.isEmpty()) {
@@ -112,6 +112,19 @@ public class ReminderService {
     
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
+        log.info("Successfully updated reminder!");
+
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
     }
 
     public List<ReminderResponse> getUserReminders(String userEmail) {
