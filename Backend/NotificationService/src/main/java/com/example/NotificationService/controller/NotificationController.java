@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,4 +35,16 @@ public class NotificationController {
     public List<NotificationResponse> getUserNotifications(@RequestParam String userEmail) {
         return notificationService.getAllUserNotifications(userEmail);
     }
+
+    @PutMapping("/UpdateNotification")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateNotification(@RequestBody NotificationRequest notificationRequest) {
+        notificationService.updateNotification(notificationRequest);
+    }
+
+    // @GetMapping("/GetNotificationByReminderId")
+    // @ResponseStatus(HttpStatus.OK)
+    // public NotificationResponse getNotificationByReminderId(@RequestParam String reminderId) {
+    //     return notificationService.getNotificationByReminderId(reminderId);
+    // }
 }

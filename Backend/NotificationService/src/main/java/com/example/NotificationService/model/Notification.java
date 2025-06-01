@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 public class Notification {
     @Id
     private String notificationId;
+    private String reminderId;
     private String status;
     private String title;
     private String type;

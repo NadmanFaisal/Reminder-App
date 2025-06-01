@@ -98,8 +98,9 @@ const HomeScreen = () => {
 
     useEffect(() => {
 
+        console.log('Use effect triggered')
         userNotifications.forEach((notification) => {
-            if(notification.notifyTime < (new Date()) || !triggeredNotifications.current.has(notification.notificationId)) {
+            if(!triggeredNotifications.current.has(notification.notificationId)) {
                 triggeredNotifications.current.add(notification.notificationId);
                 schedulePushNotification(notification.title, notification.description, notification.notifyTime)
                 console.log('notif set')
@@ -368,13 +369,24 @@ const HomeScreen = () => {
             return;
         }
     
-        console.log("Fields have changed. Patchine.");
+        console.log("Fields have changed. Patch time.");
 
         try {
+            await Notifications.cancelAllScheduledNotificationsAsync()
+            triggeredNotifications.current.clear()
+
             const response = await updateReminder(selectedReminderId, title, description, mergedCurrentRemindAt, token)
             if(response.status === 200) {
                 console.log('Patched successfully!')
                 setRefreshKey(prev => prev + 1);
+
+                if (email && token) {
+                    const notiResponse = await getUserNotifications(email, token);
+                    if (notiResponse.data) {
+                        setUserNotifications([...notiResponse.data]);
+                        console.log('Notifications refreshed after patch.');
+                    }
+                }
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");
