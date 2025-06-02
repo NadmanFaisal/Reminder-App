@@ -31,6 +31,7 @@ const LoginScreen = () => {
     try {
       const response = await loginUser(email, password)
       if(response.status === 200) {
+        await AsyncStorage.removeItem("token");
         console.log('Logged in Succesfully!')
         console.log(response.data.token)
         await AsyncStorage.setItem('token', response.data.token)

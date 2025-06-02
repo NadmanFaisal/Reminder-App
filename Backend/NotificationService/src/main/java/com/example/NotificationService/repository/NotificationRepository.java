@@ -11,5 +11,9 @@ import com.example.NotificationService.model.Notification;
 public interface NotificationRepository extends MongoRepository<Notification, String> {
     @Query("{ 'userEmail': ?0 }")
     List<Notification> findNotificationsByEmail(String userEmail);
+    
+    @Query("{ 'userEmail': ?0, 'deleted': false }")
+    List<Notification> findAllByUserEmail(String userEmail);
+    
     Optional<Notification> findByReminderId(String reminderId);
 }

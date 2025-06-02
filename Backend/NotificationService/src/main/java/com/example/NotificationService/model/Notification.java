@@ -25,5 +25,6 @@ public class Notification {
     private String type;
     private String userEmail;
     private String description;
+    private Boolean deleted;
     private Date notifyTime;
 }

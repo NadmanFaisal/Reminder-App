@@ -3,7 +3,6 @@ package com.example.NotificationService.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,9 +42,9 @@ public class NotificationController {
         notificationService.updateNotification(notificationRequest);
     }
 
-    @DeleteMapping("/DeleteNotificationByReminderId")
+    @PutMapping("/DeleteNotificationByReminderId")
     @ResponseStatus(HttpStatus.OK)
-    public NotificationResponse deleteNotificationByReminderId(@RequestParam String reminderId) {
-        return notificationService.deleteNotificationByReminderId(reminderId);
+    public NotificationResponse deleteNotificationByReminderId(@RequestParam String reminderId, @RequestParam boolean deletedStatus) {
+        return notificationService.deleteNotificationByReminderId(reminderId, deletedStatus);
     }
 }

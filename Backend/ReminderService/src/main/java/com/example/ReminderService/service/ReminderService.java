@@ -92,9 +92,7 @@ public class ReminderService {
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
 
-        if(!completed) {
-            reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId());
-        }
+        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), !completed);
 
         log.info("Reminder status changed successfully!");
 
@@ -124,7 +122,7 @@ public class ReminderService {
         reminderRepository.save(reminder);
         log.info("Reminder deleted status changed successfully!");
 
-        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId());
+        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), true);
 
         return new ReminderResponse(
             reminder.getReminderId(), 

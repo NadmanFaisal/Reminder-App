@@ -9,7 +9,8 @@ public record NotificationResponse(
     String type, 
     String userEmail, 
     String title, 
-    String description, 
+    String description,
+    Boolean deleted, 
     Date notifyTime
     ) {
 }

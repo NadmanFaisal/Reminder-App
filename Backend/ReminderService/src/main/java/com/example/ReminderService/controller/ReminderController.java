@@ -43,7 +43,8 @@ public class ReminderController {
             null,
             reminderRequest.userEmail(),
             reminderRequest.title(), 
-            reminderRequest.description(), 
+            reminderRequest.description(),
+            false,
             reminderRequest.remindAt()
         );
 
@@ -87,6 +88,7 @@ public class ReminderController {
             reminderRequest.userEmail(),
             reminderRequest.title(), 
             reminderRequest.description(), 
+            reminderRequest.deleted(),
             reminderRequest.remindAt()
         );
 

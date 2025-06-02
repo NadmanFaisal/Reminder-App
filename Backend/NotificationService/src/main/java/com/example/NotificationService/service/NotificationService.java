@@ -27,6 +27,7 @@ public class NotificationService {
             .userEmail(notificationRequest.userEmail())
             .title(notificationRequest.title())
             .description(notificationRequest.description())
+            .deleted(notificationRequest.deleted())
             .notifyTime(notificationRequest.notifyTime())
             .build();
         notificationRepository.save(notification);
@@ -39,12 +40,13 @@ public class NotificationService {
             notification.getUserEmail(),
             notification.getTitle(),
             notification.getDescription(),
+            notification.getDeleted(),
             notification.getNotifyTime()
         );
     }
 
     public List<NotificationResponse> getAllUserNotifications(String email) {
-        return notificationRepository.findNotificationsByEmail(email)
+        return notificationRepository.findAllByUserEmail(email)
             .stream()
             .map(notification -> new NotificationResponse(
                 notification.getNotificationId(), 
@@ -54,6 +56,7 @@ public class NotificationService {
                 notification.getUserEmail(),
                 notification.getTitle(),
                 notification.getDescription(),
+                notification.getDeleted(),
                 notification.getNotifyTime()
             ))
             .toList();
@@ -98,7 +101,7 @@ public class NotificationService {
         return notificationRepository.findByReminderId(reminderId);
     }
 
-    public NotificationResponse deleteNotificationByReminderId(String reminderId) {
+    public NotificationResponse deleteNotificationByReminderId(String reminderId, boolean deletedStatus) {
         Optional <Notification> fetchedNotification = notificationRepository.findByReminderId(reminderId);
         
         if (fetchedNotification.isEmpty()) {
@@ -106,7 +109,9 @@ public class NotificationService {
         }
 
         Notification notification = fetchedNotification.get();
-        notificationRepository.deleteById(notification.getNotificationId());
+        notification.setDeleted(deletedStatus);
+        notificationRepository.save(notification);
+        log.info("Deleted notification.");
         
         return new NotificationResponse(
             notification.getNotificationId(),
@@ -116,6 +121,7 @@ public class NotificationService {
             notification.getUserEmail(),
             notification.getTitle(),
             notification.getDescription(),
+            notification.getDeleted(),
             notification.getNotifyTime()
         );
     }
