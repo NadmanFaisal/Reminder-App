@@ -2,9 +2,11 @@ package com.example.ReminderService.feign;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.example.ReminderService.dto.NotificationRequest;
@@ -19,4 +21,8 @@ public interface ReminderInterface {
     @PutMapping("/NotificationService/UpdateNotification")
     @ResponseStatus(HttpStatus.OK)
     public void updateNotification(@RequestBody NotificationRequest notificationRequest);
+
+    @DeleteMapping("/NotificationService/DeleteNotificationByReminderId")
+    @ResponseStatus(HttpStatus.OK)
+    public NotificationResponse deleteNotificationByReminderId(@RequestParam String reminderId);
 }

@@ -65,14 +65,14 @@ public class ReminderController {
 
     @PatchMapping("/UpdateCompleteStatus")
     @ResponseStatus(HttpStatus.OK)
-    public void updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {
-        reminderService.updateCompleteStatus(reminderRequest);
+    public ReminderResponse updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {
+        return reminderService.updateCompleteStatus(reminderRequest);
     }
     
     @PatchMapping("/ChangeReminderDeleteStatus")
     @ResponseStatus(HttpStatus.OK)
-    public void updateDeleteStatus(@RequestBody ReminderRequest reminderRequest) {
-        reminderService.updateDeleteStatus(reminderRequest);
+    public ReminderResponse updateDeleteStatus(@RequestBody ReminderRequest reminderRequest) {
+        return reminderService.updateDeleteStatus(reminderRequest);
     }
 
     @PatchMapping("/UpdateReminder")

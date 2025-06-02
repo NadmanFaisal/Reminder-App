@@ -98,18 +98,25 @@ public class NotificationService {
         return notificationRepository.findByReminderId(reminderId);
     }
 
-    // public NotificationResponse getNotificationByReminderId(String reminderId) {
-    //     Optional <Notification> fetchedNotification = notificationRepository.findByReminderId(reminderId);
-    //     Notification notification = fetchedNotification.get();
-    //     return new NotificationResponse(
-    //         notification.getNotificationId(),
-    //         notification.getReminderId(),
-    //         notification.getStatus(),
-    //         notification.getType(),
-    //         notification.getUserEmail(),
-    //         notification.getTitle(),
-    //         notification.getDescription(),
-    //         notification.getNotifyTime()
-    //     );
-    // }
+    public NotificationResponse deleteNotificationByReminderId(String reminderId) {
+        Optional <Notification> fetchedNotification = notificationRepository.findByReminderId(reminderId);
+        
+        if (fetchedNotification.isEmpty()) {
+            throw new RuntimeException("Notification not found");
+        }
+
+        Notification notification = fetchedNotification.get();
+        notificationRepository.deleteById(notification.getNotificationId());
+        
+        return new NotificationResponse(
+            notification.getNotificationId(),
+            notification.getReminderId(),
+            notification.getStatus(),
+            notification.getType(),
+            notification.getUserEmail(),
+            notification.getTitle(),
+            notification.getDescription(),
+            notification.getNotifyTime()
+        );
+    }
 }
