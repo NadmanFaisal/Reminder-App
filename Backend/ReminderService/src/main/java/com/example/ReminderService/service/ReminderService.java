@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.ReminderService.dto.ReminderRequest;
 import com.example.ReminderService.dto.ReminderResponse;
+import com.example.ReminderService.feign.ReminderInterface;
 import com.example.ReminderService.model.Reminder;
 import com.example.ReminderService.repository.ReminderRepository;
 
@@ -19,6 +20,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReminderService {
     private final ReminderRepository reminderRepository;
+    private final ReminderInterface reminderInterface;
+
+    public ReminderResponse getFullReminderResponse(Reminder reminder) {
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
+    }
 
     public ReminderResponse createReminder(ReminderRequest reminderRequest) {
         Reminder reminder = Reminder.builder()
@@ -63,7 +79,7 @@ public class ReminderService {
             .toList();
     }
 
-    public void updateCompleteStatus(ReminderRequest reminderRequest) {
+    public ReminderResponse updateCompleteStatus(ReminderRequest reminderRequest) {
         Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
 
         if (fetchedReminder.isEmpty()) {
@@ -75,10 +91,25 @@ public class ReminderService {
         reminder.setCompleted(!completed);
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
+
+        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), !completed);
+
         log.info("Reminder status changed successfully!");
+
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
     }
 
-    public void updateDeleteStatus(ReminderRequest reminderRequest) {
+    public ReminderResponse updateDeleteStatus(ReminderRequest reminderRequest) {
         Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
 
         if (fetchedReminder.isEmpty()) {
@@ -90,9 +121,23 @@ public class ReminderService {
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
         log.info("Reminder deleted status changed successfully!");
+
+        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), true);
+
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
     }
 
-    public void updateReminder(ReminderRequest reminderRequest) {
+    public ReminderResponse updateReminder(ReminderRequest reminderRequest) {
         Optional<Reminder> fetchedReminder = this.getReminderById(reminderRequest.reminderId());
 
         if (fetchedReminder.isEmpty()) {
@@ -100,11 +145,31 @@ public class ReminderService {
         }
 
         Reminder reminder = fetchedReminder.get();
-        reminder.setTitle(reminderRequest.title());
-        reminder.setDescription(reminderRequest.description());
-        reminder.setRemindAt(reminderRequest.remindAt());
+        if (reminderRequest.title() != null) {
+            reminder.setTitle(reminderRequest.title());
+        }
+        if (reminderRequest.description() != null) {
+            reminder.setDescription(reminderRequest.description());
+        }
+        if (reminderRequest.remindAt() != null) {
+            reminder.setRemindAt(reminderRequest.remindAt());
+        }
+    
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
+        log.info("Successfully updated reminder!");
+
+        return new ReminderResponse(
+            reminder.getReminderId(), 
+            reminder.getTitle(),
+            reminder.getDescription(),
+            reminder.getUserEmail(), 
+            reminder.isCompleted(), 
+            reminder.getCreatedAt(), 
+            reminder.getLastModified(), 
+            reminder.getRemindAt(),
+            reminder.isDeleted()
+        );
     }
 
     public List<ReminderResponse> getUserReminders(String userEmail) {

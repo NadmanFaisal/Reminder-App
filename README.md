@@ -100,3 +100,7 @@ in your terminal, write
 Features:
 User data is encrypted using BCryptHashing
 Lombok for data injection
+
+================= DEV NOTES ==================
+
+Whenver making something for reminder service, ensure if it is related to notification service. Make sure to  update notification service as well if required.

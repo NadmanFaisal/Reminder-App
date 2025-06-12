@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useState, useEffect } from "react";
-import { View, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { View, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image, Platform } from "react-native";
 import { router } from 'expo-router';
 import { validateMe } from "@/api/auth";
 import IntroBox from "@/components/IntroBox";
@@ -9,6 +9,11 @@ import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder, deleteReminder } from "@/api/reminder";
+import { getUserNotifications } from "@/api/notification";
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import Constants from "expo-constants";
+
 import ShowAllButton from "@/components/ShowAllButton";
 import DoneCancelButton from "@/components/DoneCancelButton";
 import NoReminderImage from "../../assets/images/no-reminders.png"
@@ -21,6 +26,23 @@ type ReminderObject = {
     description: string;
     completed?: boolean;
 };
+
+// To avoid errors when passing as keys to a map
+type NotificationObject = {
+    notificationId: string;
+    title: string;
+    description: string;
+    notifyTime: Date;
+};
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 const HomeScreen = () => {
     const [username, setUsername] = useState('')
@@ -35,6 +57,18 @@ const HomeScreen = () => {
     const [showAllModalVisible, setShowAllModalVisible] = useState(false)
 
     const [selectedReminderId, setSelectedReminderId] = useState('')
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+    const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
+    const [notification, setNotification] = useState<Notifications.Notification | undefined>(
+        undefined
+    );
+    const notificationListener = useRef<Notifications.EventSubscription | null>(null);
+    const responseListener = useRef<Notifications.EventSubscription | null>(null);
+    const triggeredNotifications = useRef<Set<string>>(new Set());
+    
+    const [currentDate, setCurrentDate] = useState('');
+    const [userNotifications, setUserNotifications] = useState<NotificationObject[]>([])
 
     // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
 
@@ -62,6 +96,101 @@ const HomeScreen = () => {
 
     const [refreshKey, setRefreshKey] = useState(0);
 
+    useEffect(() => {
+
+        console.log('Use effect triggered')
+        userNotifications.forEach((notification) => {
+            if(!triggeredNotifications.current.has(notification.notificationId)) {
+                triggeredNotifications.current.add(notification.notificationId);
+                schedulePushNotification(notification.title, notification.description, notification.notifyTime)
+                console.log('notif set')
+            }
+        })
+        
+    }, [userNotifications])
+
+    useEffect(() => {
+        registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
+
+        if (Platform.OS === 'android') {
+            Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
+        }
+        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(notification);
+        });
+
+        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+        });
+
+        return () => {
+            notificationListener.current &&
+                Notifications.removeNotificationSubscription(notificationListener.current);
+            responseListener.current &&
+                Notifications.removeNotificationSubscription(responseListener.current);
+            };
+        }, 
+    []);
+
+    async function schedulePushNotification(notiTitle: string, description: string, notifyTime: Date) {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: notiTitle,
+          body: description,
+          data: { data: 'goes here', test: { test1: 'more data' } },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: new Date(notifyTime),
+        },
+      });
+    }
+      
+    async function registerForPushNotificationsAsync() {
+        let token;
+
+        if (Platform.OS === 'android') {
+            await Notifications.setNotificationChannelAsync('myNotificationChannel', {
+                name: 'A channel is needed for the permissions prompt to appear',
+                importance: Notifications.AndroidImportance.MAX,
+                vibrationPattern: [0, 250, 250, 250],
+                lightColor: '#FF231F7C',
+            });
+        }
+      
+        if (Device.isDevice) {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+            if (finalStatus !== 'granted') {
+                alert('Failed to get push token for push notification!');
+                return;
+            }
+
+            try {
+                const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+                if (!projectId) {
+                    throw new Error('Project ID not found');
+                }
+                token = (
+                    await Notifications.getExpoPushTokenAsync({
+                    projectId,
+                })
+            ).data;
+            console.log(token);
+            }
+            catch (e) {
+                token = `${e}`;
+            }
+        } else {
+          alert('Must use physical device for Push Notifications');
+        }
+      
+        return token;
+    }  
 
     useEffect(() => {
         const getData = async () => {
@@ -104,13 +233,30 @@ const HomeScreen = () => {
                     setCompletedReminders(completed)
                     setIncompletedReminders(incompleted)
                     // setReminders(sortedReminders)
-                    console.log(response.data)
+                    console.log(`User's reminders received:`, response.data)
                 }
             } catch (err: any) {
                 console.log('Reminders could not be fetched:', err.message)
             }
         }
         fetchUserReminders()
+    }, [email, token, refreshKey])
+
+    useEffect(() => {
+        const fetchUserNotifications = async () => {
+            if (!email || !token) return
+            try {
+                console.log(email)
+                const response = await getUserNotifications(email, token)
+                if(response.data) {
+                    setUserNotifications(response.data)
+                    console.log('Notifications received: ', response.data)
+                }
+            } catch (err: any) {
+                console.log('Notifications could not be fetched:', err.message)
+            }
+        }
+        fetchUserNotifications()
     }, [email, token, refreshKey])
 
     // const signOut = async () => {
@@ -153,7 +299,7 @@ const HomeScreen = () => {
             const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
             if(response) {
                 console.log(response)
-                setViewReminderModalVisible(false)
+                setCreateReminderModalVisible(false)
                 resetReminderModalFields()
                 setRefreshKey(prev => prev + 1)
             }
@@ -223,13 +369,24 @@ const HomeScreen = () => {
             return;
         }
     
-        console.log("Fields have changed. Patchine.");
+        console.log("Fields have changed. Patch time.");
 
         try {
+            await Notifications.cancelAllScheduledNotificationsAsync()
+            triggeredNotifications.current.clear()
+
             const response = await updateReminder(selectedReminderId, title, description, mergedCurrentRemindAt, token)
             if(response.status === 200) {
                 console.log('Patched successfully!')
                 setRefreshKey(prev => prev + 1);
+
+                if (email && token) {
+                    const notiResponse = await getUserNotifications(email, token);
+                    if (notiResponse.data) {
+                        setUserNotifications([...notiResponse.data]);
+                        console.log('Notifications refreshed after patch.');
+                    }
+                }
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");
