@@ -50,6 +50,7 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      IP_ADDRESS: ${{ secrets.IP_ADDRESS }}
 
     steps:
       - uses: actions/checkout@v4
