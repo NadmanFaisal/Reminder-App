@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.example.ReminderService.dto.NotificationRequest;
 import com.example.ReminderService.dto.NotificationResponse;
 
-@FeignClient("NOTIFICATIONSERVICE")
+@FeignClient("NotificationService")
 public interface ReminderInterface {
     @PostMapping("/NotificationService/CreateNotification")
     @ResponseStatus(HttpStatus.CREATED)
