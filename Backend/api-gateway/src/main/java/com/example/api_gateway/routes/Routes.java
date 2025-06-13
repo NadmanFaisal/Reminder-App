@@ -1,5 +1,6 @@
 package com.example.api_gateway.routes;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,9 @@ import com.example.api_gateway.filter.JwtFilter;
 
 @Configuration
 public class Routes {
+
+    @Value("${IP_ADDRESS}")
+    private String ipAddress;
 
     private final JwtFilter jwtFilter;
 
@@ -28,7 +32,7 @@ public class Routes {
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
                         .or(RequestPredicates.method(HttpMethod.POST))
                         .or(RequestPredicates.method(HttpMethod.GET))),
-                HandlerFunctions.http("http://localhost:8082")
+                HandlerFunctions.http("http://authentication-service:8082")
             )
             .route(
                 RequestPredicates.path("/LoggingService/**")
@@ -36,7 +40,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.POST))
                         .or(RequestPredicates.method(HttpMethod.GET))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://localhost:8083").handle(req)
+                    req -> HandlerFunctions.http("http://logging-service:8083").handle(req)
                 )
             )
             .route(
@@ -48,7 +52,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.DELETE))
                         .or(RequestPredicates.method(HttpMethod.GET))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://localhost:8084").handle(req)
+                    req -> HandlerFunctions.http("http://notification-service:8084").handle(req)
                 )
             )
             // .route(
@@ -69,7 +73,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.DELETE))
                         .or(RequestPredicates.method(HttpMethod.PATCH))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://localhost:8085").handle(req)
+                    req -> HandlerFunctions.http("http://reminder-service:8085").handle(req)
                 )
             )
             .build();
