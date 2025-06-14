@@ -1,6 +1,5 @@
 package com.example.api_gateway.routes;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +13,6 @@ import com.example.api_gateway.filter.JwtFilter;
 
 @Configuration
 public class Routes {
-
-    @Value("${IP_ADDRESS}")
-    private String ipAddress;
 
     private final JwtFilter jwtFilter;
 
