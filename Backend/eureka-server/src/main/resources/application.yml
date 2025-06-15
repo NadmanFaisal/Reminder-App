@@ -9,7 +9,7 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
   service-url:
-    defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    defaultZone: https://eureka-server-181273673095.europe-west1.run.app
 
 management:
   endpoints:
