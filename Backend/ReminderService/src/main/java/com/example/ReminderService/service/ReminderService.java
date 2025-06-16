@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ReminderService.dto.NotificationRequest;
 import com.example.ReminderService.dto.ReminderRequest;
 import com.example.ReminderService.dto.ReminderResponse;
 import com.example.ReminderService.feign.ReminderInterface;
@@ -92,7 +93,19 @@ public class ReminderService {
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
 
-        // reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), !completed);
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            reminderRequest.reminderId(),
+            null,
+            null,
+            reminderRequest.userEmail(),
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.deleted(),
+            reminderRequest.remindAt()
+        );
+
+        reminderInterface.deleteNotificationByReminderId(notificationRequest);
 
         log.info("Reminder status changed successfully!");
 
