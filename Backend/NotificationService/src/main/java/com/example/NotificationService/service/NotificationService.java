@@ -101,17 +101,18 @@ public class NotificationService {
         return notificationRepository.findByReminderId(reminderId);
     }
 
-    public NotificationResponse deleteNotificationByReminderId(String reminderId, boolean deletedStatus) {
-        Optional <Notification> fetchedNotification = notificationRepository.findByReminderId(reminderId);
+    public NotificationResponse deleteNotificationByReminderId(NotificationRequest notificationRequest) {
+        Optional <Notification> fetchedNotification = this.getNotificationByReminderId(notificationRequest.reminderId());
         
         if (fetchedNotification.isEmpty()) {
             throw new RuntimeException("Notification not found");
         }
 
         Notification notification = fetchedNotification.get();
-        notification.setDeleted(deletedStatus);
+        boolean deletedStatus = notification.getDeleted();
+        notification.setDeleted(!deletedStatus);
         notificationRepository.save(notification);
-        log.info("Deleted notification.");
+        log.info("Notification deleted updated.");
         
         return new NotificationResponse(
             notification.getNotificationId(),

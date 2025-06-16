@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.example.ReminderService.dto.NotificationRequest;
@@ -21,7 +20,7 @@ public interface ReminderInterface {
     @ResponseStatus(HttpStatus.OK)
     public void updateNotification(@RequestBody NotificationRequest notificationRequest);
 
-    @PutMapping("/NotificationService/DeleteNotificationByReminderId")
+    @PutMapping("/DeleteNotificationByReminderId")
     @ResponseStatus(HttpStatus.OK)
-    public NotificationResponse deleteNotificationByReminderId(@RequestParam String reminderId, @RequestParam("deletedStatus") boolean deletedStatus);
+    public NotificationResponse deleteNotificationByReminderId(@RequestBody NotificationRequest notificationRequest);
 }

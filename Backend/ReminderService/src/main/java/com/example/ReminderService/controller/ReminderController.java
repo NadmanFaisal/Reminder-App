@@ -67,12 +67,38 @@ public class ReminderController {
     @PatchMapping("/UpdateCompleteStatus")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            reminderRequest.reminderId(),
+            null,
+            null,
+            reminderRequest.userEmail(),
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.deleted(),
+            reminderRequest.remindAt()
+        );
+
+        reminderInterface.updateNotification(notificationRequest);
         return reminderService.updateCompleteStatus(reminderRequest);
     }
     
     @PatchMapping("/ChangeReminderDeleteStatus")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse updateDeleteStatus(@RequestBody ReminderRequest reminderRequest) {
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            reminderRequest.reminderId(),
+            null,
+            null,
+            reminderRequest.userEmail(),
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.deleted(),
+            reminderRequest.remindAt()
+        );
+
+        reminderInterface.deleteNotificationByReminderId(notificationRequest);
         return reminderService.updateDeleteStatus(reminderRequest);
     }
 
