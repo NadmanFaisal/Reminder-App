@@ -20,7 +20,7 @@ public interface ReminderInterface {
     @ResponseStatus(HttpStatus.OK)
     public void updateNotification(@RequestBody NotificationRequest notificationRequest);
 
-    @PutMapping("/DeleteNotificationByReminderId")
+    @PutMapping("/NotificationService/DeleteNotificationByReminderId")
     @ResponseStatus(HttpStatus.OK)
     public NotificationResponse deleteNotificationByReminderId(@RequestBody NotificationRequest notificationRequest);
 }
