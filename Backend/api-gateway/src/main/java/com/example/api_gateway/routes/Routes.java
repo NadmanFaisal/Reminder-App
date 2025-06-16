@@ -28,7 +28,7 @@ public class Routes {
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
                         .or(RequestPredicates.method(HttpMethod.POST))
                         .or(RequestPredicates.method(HttpMethod.GET))),
-                HandlerFunctions.http("http://authentication-service:8082")
+                HandlerFunctions.http("https://authentication-service-181273673095.asia-south1.run.app")
             )
             .route(
                 RequestPredicates.path("/LoggingService/**")
@@ -36,7 +36,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.POST))
                         .or(RequestPredicates.method(HttpMethod.GET))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://logging-service:8083").handle(req)
+                    req -> HandlerFunctions.http("https://logging-service-181273673095.asia-south1.run.app").handle(req)
                 )
             )
             .route(
@@ -48,7 +48,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.DELETE))
                         .or(RequestPredicates.method(HttpMethod.GET))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://notification-service:8084").handle(req)
+                    req -> HandlerFunctions.http("https://notification-service-181273673095.asia-south1.run.app").handle(req)
                 )
             )
             // .route(
@@ -69,7 +69,7 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.DELETE))
                         .or(RequestPredicates.method(HttpMethod.PATCH))),
                 request -> jwtFilter.filter(request,
-                    req -> HandlerFunctions.http("http://reminder-service:8085").handle(req)
+                    req -> HandlerFunctions.http("https://reminder-service-181273673095.asia-south1.run.app").handle(req)
                 )
             )
             .build();
