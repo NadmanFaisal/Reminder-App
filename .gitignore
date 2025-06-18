@@ -26,4 +26,6 @@ replay_pid*
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 *.env
+*.env-dev
+*.env-prod
 Frontend/api/constants.ts

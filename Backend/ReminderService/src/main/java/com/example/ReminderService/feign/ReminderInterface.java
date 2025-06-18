@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.example.ReminderService.dto.NotificationRequest;
 import com.example.ReminderService.dto.NotificationResponse;
 
-@FeignClient(name = "NotificationService", url = "https://notification-service-181273673095.asia-south1.run.app")
+@FeignClient(name = "NotificationService", url = "${notification.service.url}")
 public interface ReminderInterface {
     @PostMapping("/NotificationService/CreateNotification")
     @ResponseStatus(HttpStatus.CREATED)
