@@ -105,6 +105,6 @@ Lombok for data injection
 
 Whenver making something for reminder service, ensure if it is related to notification service. Make sure to  update notification service as well if required.
 
-export $(grep -v '^#' .env-dev | xargs)
+export $(grep -v '^#' .env | xargs)
 
 docker compose --env-file .env up --build
