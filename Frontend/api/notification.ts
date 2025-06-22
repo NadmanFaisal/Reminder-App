@@ -67,3 +67,19 @@ export async function deleteNotification(reminderId: string, token: string) {
     throw new Error(message);
   }
 }
+
+export async function updateNotification(reminderId: string, title: string, description: string, notifyTime: Date, token: string) {
+  try {
+    const response = await api.put('/NotificationService/UpdateNotification', {
+      reminderId, title, description, notifyTime
+    }, { headers: {Authorization: `Bearer: ${token}` } }
+  )
+  return response
+  }catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      `Could not update notifications`;
+    throw new Error(message);
+  }
+}
