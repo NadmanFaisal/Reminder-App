@@ -9,7 +9,7 @@ import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder, deleteReminder } from "@/api/reminder";
-import { getUserNotifications, createNotification, deleteNotification } from "@/api/notification";
+import { getUserNotifications, createNotification, deleteNotification, updateNotification } from "@/api/notification";
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from "expo-constants";
@@ -395,16 +395,20 @@ const HomeScreen = () => {
 
             const response = await updateReminder(selectedReminderId, title, description, mergedCurrentRemindAt, token)
             if(response.status === 200) {
-                console.log('Patched successfully!')
-                setRefreshKey(prev => prev + 1);
+                console.log('Reminder updated successfully!')
 
-                if (email && token) {
-                    const notiResponse = await getUserNotifications(email, token);
-                    if (notiResponse.data) {
-                        setUserNotifications([...notiResponse.data]);
-                        console.log('Notifications refreshed after patch.');
+                const response2 = await updateNotification(selectedReminderId, title, description, mergedCurrentRemindAt, token)
+                if(response2) {
+                    if (email && token) {
+                        const notiResponse = await getUserNotifications(email, token);
+                        if (notiResponse.data) {
+                            setUserNotifications([...notiResponse.data]);
+                            console.log('Notifications refreshed after patch.');
+                        }
                     }
                 }
+
+                setRefreshKey(prev => prev + 1);
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");

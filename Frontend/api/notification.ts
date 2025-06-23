@@ -72,7 +72,7 @@ export async function updateNotification(reminderId: string, title: string, desc
   try {
     const response = await api.put('/NotificationService/UpdateNotification', {
       reminderId, title, description, notifyTime
-    }, { headers: {Authorization: `Bearer: ${token}` } }
+    }, { headers: { Authorization: `Bearer ${token}` } }
   )
   return response
   }catch (err: any) {
