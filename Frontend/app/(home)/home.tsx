@@ -9,7 +9,7 @@ import alert from "../../components/Alert";
 import { CreateReminderModal } from "@/components/CreateReminderModalView";
 import { Reminder } from "@/components/Reminders";
 import { createReminder, getUserReminders, updateReminderCompleteStatus, getReminder, updateReminder, deleteReminder } from "@/api/reminder";
-import { getUserNotifications } from "@/api/notification";
+import { getUserNotifications, createNotification, deleteNotification, updateNotification } from "@/api/notification";
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from "expo-constants";
@@ -296,13 +296,22 @@ const HomeScreen = () => {
             mergedDateTime.setSeconds(0)
             mergedDateTime.setMilliseconds(0)
 
-            const response = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
-            if(response) {
-                console.log(response)
-                setCreateReminderModalVisible(false)
-                resetReminderModalFields()
-                setRefreshKey(prev => prev + 1)
+            const reminderResponse = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
+            if(!reminderResponse) {
+                alert("Creating reminder failed");
+                return
             }
+
+            const notificationResponse = await createNotification(reminderResponse.data.reminderId, reminderResponse.data.title, reminderResponse.data.userEmail, reminderResponse.data.description, false, reminderResponse.data.remindAt, token)
+            
+            if (!notificationResponse) {
+                alert("Reminder created, but notification failed. Delete reminder and try again");
+                return;
+            }
+
+            setCreateReminderModalVisible(false);
+            resetReminderModalFields();
+            setRefreshKey((prev) => prev + 1);
         } catch (err: any) {
             alert("Creating reminder failed", err.message || "Something went wrong");
         }
@@ -311,10 +320,19 @@ const HomeScreen = () => {
     const changeReminderCompletedStatus = async (reminderId: string) => {
         try {
             const response = await updateReminderCompleteStatus(reminderId, token)
-            if(response.status === 200) {
-                console.log('Reminder completed status updated')
-                setRefreshKey(prev => prev + 1)
+            if(response.status !== 200) {
+                alert("Changing reminder status failed")
+                return
             }
+            const notificationResponse = await deleteNotification(reminderId, token)
+            
+            if(notificationResponse.status !== 200) {
+                alert('Notification status changing failed')
+                return
+            }
+
+            console.log('Reminder completed status updated')
+            setRefreshKey(prev => prev + 1)
         } catch (err: any) {
             alert("Changing reminder status failed", err.message || "Something went wrong");
         }
@@ -377,16 +395,20 @@ const HomeScreen = () => {
 
             const response = await updateReminder(selectedReminderId, title, description, mergedCurrentRemindAt, token)
             if(response.status === 200) {
-                console.log('Patched successfully!')
-                setRefreshKey(prev => prev + 1);
+                console.log('Reminder updated successfully!')
 
-                if (email && token) {
-                    const notiResponse = await getUserNotifications(email, token);
-                    if (notiResponse.data) {
-                        setUserNotifications([...notiResponse.data]);
-                        console.log('Notifications refreshed after patch.');
+                const response2 = await updateNotification(selectedReminderId, title, description, mergedCurrentRemindAt, token)
+                if(response2) {
+                    if (email && token) {
+                        const notiResponse = await getUserNotifications(email, token);
+                        if (notiResponse.data) {
+                            setUserNotifications([...notiResponse.data]);
+                            console.log('Notifications refreshed after patch.');
+                        }
                     }
                 }
+
+                setRefreshKey(prev => prev + 1);
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");
@@ -400,10 +422,19 @@ const HomeScreen = () => {
         try {
             console.log('delete pressed', reminderId)
             const response = await deleteReminder(reminderId, token)
-            if(response.status === 200) {
-                console.log('Reminder deleted.')
-                setRefreshKey(prev => prev + 1)
+            if(response.status !== 200) {
+                alert("Deleting reminder failed")
+                return
             }
+            const notificationResponse = await deleteNotification(reminderId, token)
+
+            if(notificationResponse.status !== 200) {
+                alert("Deleting notification failed")
+                return
+            }
+
+            console.log('Reminder deleted.')
+            setRefreshKey(prev => prev + 1)
         } catch (err: any) {
             alert("Deleting reminder failed", err.message || "Something went wrong");
         }

@@ -30,6 +30,12 @@ jobs:
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
       IP_ADDRESS: ${{ secrets.IP_ADDRESS }}
+      EUREKA_SERVER_URL: ${{ secrets.EUREKA_SERVER_URL }}
+      NOTIFICATION_SERVICE_URL: ${{ secrets.NOTIFICATION_SERVICE_URL }}
+      AUTHENTICATION_SERVICE_URL: ${{ secrets.AUTHENTICATION_SERVICE_URL }}
+      REMINDER_SERVICE_URL: ${{ secrets.REMINDER_SERVICE_URL }}
+      LOGGING_SERVICE_URL: ${{ secrets.LOGGING_SERVICE_URL }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -48,6 +54,8 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      EUREKA_SERVER_URL: ${{ secrets.EUREKA_SERVER_URL }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -65,6 +73,8 @@ jobs:
     env:
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      EUREKA_SERVER_URL: ${{ secrets.EUREKA_SERVER_URL }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -81,6 +91,8 @@ jobs:
     env:
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      EUREKA_SERVER_URL: ${{ secrets.EUREKA_SERVER_URL }}
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -99,6 +111,9 @@ jobs:
     env:
       USERNAME: ${{ secrets.MONGO_USERNAME }}
       PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+      EUREKA_SERVER_URL: ${{ secrets.EUREKA_SERVER_URL }}
+      NOTIFICATION_SERVICE_URL: ${{ secrets.NOTIFICATION_SERVICE_URL }}
+      
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4

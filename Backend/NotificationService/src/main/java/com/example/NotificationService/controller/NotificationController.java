@@ -44,7 +44,7 @@ public class NotificationController {
 
     @PutMapping("/DeleteNotificationByReminderId")
     @ResponseStatus(HttpStatus.OK)
-    public NotificationResponse deleteNotificationByReminderId(@RequestParam String reminderId, @RequestParam boolean deletedStatus) {
-        return notificationService.deleteNotificationByReminderId(reminderId, deletedStatus);
+    public NotificationResponse deleteNotificationByReminderId(@RequestBody NotificationRequest notificationRequest) {
+        return notificationService.deleteNotificationByReminderId(notificationRequest);
     }
 }

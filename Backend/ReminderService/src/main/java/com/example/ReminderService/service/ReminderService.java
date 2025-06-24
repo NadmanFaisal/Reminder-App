@@ -6,9 +6,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.ReminderService.dto.NotificationRequest;
 import com.example.ReminderService.dto.ReminderRequest;
 import com.example.ReminderService.dto.ReminderResponse;
-import com.example.ReminderService.feign.ReminderInterface;
 import com.example.ReminderService.model.Reminder;
 import com.example.ReminderService.repository.ReminderRepository;
 
@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReminderService {
     private final ReminderRepository reminderRepository;
-    private final ReminderInterface reminderInterface;
 
     public ReminderResponse getFullReminderResponse(Reminder reminder) {
         return new ReminderResponse(
@@ -92,7 +91,18 @@ public class ReminderService {
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
 
-        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), !completed);
+        NotificationRequest notificationRequest = new NotificationRequest(
+            null,
+            reminderRequest.reminderId(),
+            null,
+            null,
+            reminderRequest.userEmail(),
+            reminderRequest.title(), 
+            reminderRequest.description(), 
+            reminderRequest.deleted(),
+            reminderRequest.remindAt()
+        );
+
 
         log.info("Reminder status changed successfully!");
 
@@ -121,8 +131,6 @@ public class ReminderService {
         reminder.setLastModified(new Date());
         reminderRepository.save(reminder);
         log.info("Reminder deleted status changed successfully!");
-
-        reminderInterface.deleteNotificationByReminderId(reminderRequest.reminderId(), true);
 
         return new ReminderResponse(
             reminder.getReminderId(), 
