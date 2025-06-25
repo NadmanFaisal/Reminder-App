@@ -16,13 +16,9 @@ RUN npm i --unsafe-perm --allow-root -g npm@latest @expo/ngrok@^4.1.0
 RUN mkdir /opt/react_native_app
 WORKDIR /opt/react_native_app
 ENV PATH /opt/react_native_app/.bin:$PATH
-COPY package.json package-lock.json ./
-RUN npm install
-
-# copy in our source code last, as it changes the most
-WORKDIR /opt/react_native_app
-# for development, we bind mount volumes; comment out for production
 COPY . .
+
+RUN npm install
 
 ENTRYPOINT ["npx", "expo", "start"]
 CMD ["--web", "--tunnel"]
