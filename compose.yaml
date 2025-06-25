@@ -1,5 +1,29 @@
 services:
 
+  react_native_app:
+    build:
+      context: ./Frontend/
+      args:
+        - NODE_ENV=development
+    environment:
+      - NODE_ENV=development
+    tty: true
+    ports:
+      - '19006:19006'
+      - '19001:19001'
+      - '19002:19002'
+      - '8081:8081'
+    volumes:
+      - ./Frontend:/opt/react_native_app:delegated
+      - notused:/opt/react_native_app/node_modules
+    working_dir: /opt/react_native_app
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+    - |
+      npm install && npx expo start --tunnel
+    healthcheck:
+      disable: true
+
   mongodb:
     image: mongo:latest
     container_name: "mongodb"
@@ -83,3 +107,6 @@ services:
       MONGO_PASSWORD: ${MONGO_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
+
+volumes:
+  notused:

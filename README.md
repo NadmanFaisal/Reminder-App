@@ -108,3 +108,5 @@ Whenver making something for reminder service, ensure if it is related to notifi
 export $(grep -v '^#' .env | xargs)
 
 docker compose --env-file .env up --build
+
+docker build -t react_native_app ./Frontend
