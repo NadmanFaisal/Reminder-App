@@ -118,4 +118,4 @@ docker run -it --rm \
   -p 19001:19001 \
   -p 19002:19002 \
   -p 8081:8081 \
-  reminder-app-react_native_app
+  carbonatedwaterr/reminder-app-frontend
