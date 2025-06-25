@@ -17,7 +17,7 @@ jobs:
       - name: Build docker image
         run: |
           cd Frontend/
-          docker build -t react_native_app .
+          docker build -t reminder-app-frontend .
 
   build-eureka-server:
     runs-on: ubuntu-latest
