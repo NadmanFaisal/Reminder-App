@@ -111,8 +111,6 @@ docker compose --env-file .env up --build
 
 docker build -t react_native_app ./Frontend
 
-After building through docker compose:
-
 docker run -it --rm \
   -p 19006:19006 \
   -p 19001:19001 \

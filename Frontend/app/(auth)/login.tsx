@@ -1,3 +1,14 @@
+/**
+ * Log in page is used for logging in users 
+ * into the system. This page features manual 
+ * email and password input, which are used to 
+ * validate users in the DB. The page also features 
+ * OAuth log in. Upon successful user validation, 
+ * the backend provides a JWT token, which is used 
+ * to authorize all the API calls made by the 
+ * particular user.
+ */
+
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import alert from '../../components/Alert';
@@ -11,11 +22,24 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router'
 
 const LoginScreen = () => {
+
+  // Used to hold the email value of the user from the input forms
   const [email, setEmail] = useState('');
+
+  // Used to hold the password value of the user from the input forms
   const [password, setPassword] = useState('');
   
+  /** 
+   * Responsible for validating whether the user exists 
+   * in the DB. Upon validation, the backend returns a 
+   * token, which is placed in the async storage. The 
+   * token is later used for authorization whevener the 
+   * user makes an API call to the backend.
+  */
   const loginPress = async () => {
     console.log('Log in button pressed!')
+
+    // Validates the email format. Throws error is incorrect
     if(email.trim() === '') {
       alert('Email field cannot be empty.')
       return
@@ -24,17 +48,26 @@ const LoginScreen = () => {
       return
     }
 
+    // Password field cannot be empty
     if(password === '') {
       alert('Password field cannot be empty.')
       return
     }
     try {
+
+      // API call to the backend responsible for logging in
       const response = await loginUser(email, password)
       if(response.status === 200) {
+
+        // Removes the previous invalid token
         await AsyncStorage.removeItem("token");
         console.log('Logged in Succesfully!')
         console.log(response.data.token)
+
+        // Sets the new token in the async storage
         await AsyncStorage.setItem('token', response.data.token)
+
+        // Redirects to home screen
         router.dismissTo('/home')
       }
     } catch (error: any) {

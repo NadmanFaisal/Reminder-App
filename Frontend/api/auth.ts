@@ -1,5 +1,14 @@
 import api from "./api";
 
+/**
+ * Method responsible for signing in user to the system. 
+ * The method sends an api call using HTTP requests, where 
+ * the backend creates the user and stores it in the DB
+ * @param email String email value of the user
+ * @param username String username value of the user
+ * @param password String password value of the user
+ * @returns Response received from the backend.
+ */
 export async function signupUser(email: string, username: string, password: string) {
     try {
         const response = await api.post('/AuthenticationService/SignUp', {
@@ -15,6 +24,16 @@ export async function signupUser(email: string, username: string, password: stri
     }
 }
 
+/**
+ * Method responsible for logging in user to the system. 
+ * The method sends an api call using HTTP requests, where 
+ * the backend checks whether the user exists in the system, 
+ * sends back a response from the backend.
+ * @param email String email value of the user
+ * @param username String username value of the user
+ * @param password String password value of the user
+ * @returns Response received from the backend.
+ */
 export async function loginUser(email: string, password: string) {
     try {
         const response = await api.post('/AuthenticationService/LogIn', {
@@ -30,6 +49,13 @@ export async function loginUser(email: string, password: string) {
     }
 }
 
+/**
+ * This method sends an HTTP request to the backend with 
+ * the token, validating it. If the token is invalid, the 
+ * backend generates a new token and sends it as a response.
+ * @param token Token which is set in the async storage.
+ * @returns Response received from the backend.
+ */
 export async function validateMe(token: string | null) {
   try {
     const response = await api.post('AuthenticationService/ValidateMe', {
