@@ -65,9 +65,20 @@ const HomeScreen = () => {
     );
     const notificationListener = useRef<Notifications.EventSubscription | null>(null);
     const responseListener = useRef<Notifications.EventSubscription | null>(null);
+
+    /**
+     * Set of notifications that has alreadt been scheduled. 
+     * It is a 'Set' data structured as sets store only unique 
+     * elements.
+     */
     const triggeredNotifications = useRef<Set<string>>(new Set());
     
     const [currentDate, setCurrentDate] = useState('');
+
+    /** 
+     * List of the specific user's notification, 
+     * fetched from the backend.
+    */ 
     const [userNotifications, setUserNotifications] = useState<NotificationObject[]>([])
 
     // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
@@ -96,10 +107,26 @@ const HomeScreen = () => {
 
     const [refreshKey, setRefreshKey] = useState(0);
 
+    /**
+     * This useEffect is responsible for creating a list of 
+     * scheduled notifications, given a list of notification 
+     * called 'userNotifications'. This use effect takes 
+     * place when the component mounts, whenever there is a 
+     * change/update in userNotifications.
+     */
     useEffect(() => {
 
         console.log('Use effect triggered')
+
+        // For each notification in user notifications, 
         userNotifications.forEach((notification) => {
+
+            /** 
+             * If a notification with a specific noti ID is not 
+             * present in the triggeredNotificatinos set, then 
+             * the notification ID is added to the set of 
+             * triggeredNotifications, and a push noti is scheduled.
+            */
             if(!triggeredNotifications.current.has(notification.notificationId)) {
                 triggeredNotifications.current.add(notification.notificationId);
                 schedulePushNotification(notification.title, notification.description, notification.notifyTime)
@@ -109,20 +136,37 @@ const HomeScreen = () => {
         
     }, [userNotifications])
 
+    /**
+     * This useEffect is responsible for registering notifications 
+     * as push notifications. This use effect takes place only once, 
+     * when the component mounts. 
+     */
     useEffect(() => {
+
+        // Request permission and retrieve Expo push token
         registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
 
+        // For Android: fetch existing notification channels
         if (Platform.OS === 'android') {
             Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
         }
+
+        /** Listen for incoming notifications while the app is 
+         * in the foreground.
+         */ 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
         });
 
+        /**
+         * Listen for user's interaction with a notification 
+         * (tap, dismiss, etc.)
+         */
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log(response);
         });
 
+        // Cleanup listeners when the component unmounts
         return () => {
             notificationListener.current &&
                 Notifications.removeNotificationSubscription(notificationListener.current);
