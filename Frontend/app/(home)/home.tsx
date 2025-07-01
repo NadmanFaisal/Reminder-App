@@ -176,13 +176,26 @@ const HomeScreen = () => {
         }, 
     []);
 
+    /**
+     * Schedules a push notification to be delivered at a specific 
+     * time
+     * @param notiTitle Title of the notification
+     * @param description Description of the notification
+     * @param notifyTime Date and time for when the notification is to be triggered
+     */
     async function schedulePushNotification(notiTitle: string, description: string, notifyTime: Date) {
       await Notifications.scheduleNotificationAsync({
+
+        // Content of the notification
         content: {
           title: notiTitle,
           body: description,
           data: { data: 'goes here', test: { test1: 'more data' } },
         },
+
+        /**When to trigget the notification, and the 
+         * trigger type
+         */
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: new Date(notifyTime),
@@ -190,9 +203,21 @@ const HomeScreen = () => {
       });
     }
       
+    /**
+     * Register the device for push notifications and 
+     * retrieves  the Expo push token.
+     * 
+     * In android, it sets up a notification channel, 
+     * which is required for push permissions to work properly.
+     * 
+     * In pyysical devices, it requests for notification permissions, 
+     * and retrieves the Expo push token.
+     * @returns Expo push token as string, or error if registration fails
+     */
     async function registerForPushNotificationsAsync() {
         let token;
 
+        // Setup android notification channel
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('myNotificationChannel', {
                 name: 'A channel is needed for the permissions prompt to appear',
@@ -201,7 +226,8 @@ const HomeScreen = () => {
                 lightColor: '#FF231F7C',
             });
         }
-      
+
+        // Notification works only in physical devices and not simulators
         if (Device.isDevice) {
             const { status: existingStatus } = await Notifications.getPermissionsAsync();
             let finalStatus = existingStatus;
@@ -236,6 +262,15 @@ const HomeScreen = () => {
         return token;
     }  
 
+    /**
+     * The useEffect is responsible for retrieving the token 
+     * from the asyncStorage, and validating it with the backend 
+     * to ensure the correct session of the user, and redirecting 
+     * the user to the required screens. 
+     * 
+     * The use effect takes place once only when the component 
+     * mounts.
+     */
     useEffect(() => {
         const getData = async () => {
           try {
@@ -260,8 +295,22 @@ const HomeScreen = () => {
         getData();
     }, [])
 
+    /**
+     * This useEffect is responsible for fetching the 
+     * current user's reminders, and sorting them according 
+     * to their completed status. 
+     * 
+     * This useEffect takes place only whenever there is a change 
+     * in the valus of the following- email, token, and refreshkey
+     * when the component mounts.
+     */
     useEffect(() => {
         const fetchUserReminders = async () => {
+
+            /** 
+             * If there is no email or token, then this 
+             * method does not take place
+             */
             if (!email || !token) return
             try {
                 console.log(email)
@@ -271,12 +320,15 @@ const HomeScreen = () => {
                         (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     );
     
+                    /**
+                     * Filters the reminders according to their completed 
+                     * status.
+                     */
                     const completed = sortedReminders.filter((r: any) => r.completed === true);
                     const incompleted = sortedReminders.filter((r: any) => !r.completed);
 
                     setCompletedReminders(completed)
                     setIncompletedReminders(incompleted)
-                    // setReminders(sortedReminders)
                     console.log(`User's reminders received:`, response.data)
                 }
             } catch (err: any) {
@@ -286,6 +338,14 @@ const HomeScreen = () => {
         fetchUserReminders()
     }, [email, token, refreshKey])
 
+    /**
+     * This useEffect is responsible for fetching the user's 
+     * notifications from the backend using the user's email, 
+     * and token. 
+     * 
+     * This method takes place when there is change in value of
+     * email, token, and refreshKey.
+     */
     useEffect(() => {
         const fetchUserNotifications = async () => {
             if (!email || !token) return
@@ -302,11 +362,6 @@ const HomeScreen = () => {
         }
         fetchUserNotifications()
     }, [email, token, refreshKey])
-
-    // const signOut = async () => {
-    //     await AsyncStorage.removeItem("token");
-    //     router.dismissTo('/login')
-    // }
 
     const resetReminderModalFields = () => {
         setSelectedReminderId('')
