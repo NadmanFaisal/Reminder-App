@@ -81,7 +81,7 @@ const HomeScreen = () => {
     */ 
     const [userNotifications, setUserNotifications] = useState<NotificationObject[]>([])
 
-    // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
+    // ========== VARIABLES TO KEEP TRACK OF CHANGES WITHIN THE MODAL ==========
 
     const [originalTitle, setOriginalTitle] = useState('')
     const [originalDescription, setOriginalDescription] = useState('')
@@ -90,6 +90,8 @@ const HomeScreen = () => {
     const [originalRemindTime, setoriginalRemindTime] = useState(new Date())
 
     // ========================================================
+
+    // ============ VARIABLES WITHIN THE MODAL =================
 
     const [viewReminderModalVisible, setViewReminderModalVisible] = useState(false)
     
@@ -104,6 +106,8 @@ const HomeScreen = () => {
     
     const [remindDate, setRemindDate] = useState(new Date())
     const [remindTime, setRemindTime] = useState(new Date())
+
+    // ========================================================
 
     const [refreshKey, setRefreshKey] = useState(0);
 
@@ -363,6 +367,9 @@ const HomeScreen = () => {
         fetchUserNotifications()
     }, [email, token, refreshKey])
 
+    /**
+     * Resets the input fields within the modal view.
+     */
     const resetReminderModalFields = () => {
         setSelectedReminderId('')
         setTitle('')
@@ -382,40 +389,65 @@ const HomeScreen = () => {
         // ========================================================
     }
 
+    /**
+     * Responsible for posting reminder to the backend, 
+     * taking values from the input fields within the modal 
+     * views.
+     * @returns Returns error if failed.
+     */
     const postReminder = async () => {
         try {
+
+            // Title cannot remain empty.
             if(title === '') {
                 alert('Title cannot be empty.')
                 return
             }
 
+            // Merges the date and time together to store in the backend
             const mergedDateTime = new Date(remindDate)
             mergedDateTime.setHours(remindTime.getHours())
             mergedDateTime.setMinutes(remindTime.getMinutes())
             mergedDateTime.setSeconds(0)
             mergedDateTime.setMilliseconds(0)
 
+            // Sends an API call to the backend to create reminder
             const reminderResponse = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
+            
+            // Shows an alert if there are no response
             if(!reminderResponse) {
                 alert("Creating reminder failed");
                 return
             }
 
+            /**
+             * Upon reminder creation success, creates notification in 
+             * the backend
+             */
             const notificationResponse = await createNotification(reminderResponse.data.reminderId, reminderResponse.data.title, reminderResponse.data.userEmail, reminderResponse.data.description, false, reminderResponse.data.remindAt, token)
             
+            // Shows alert if no notification response
             if (!notificationResponse) {
                 alert("Reminder created, but notification failed. Delete reminder and try again");
                 return;
             }
 
+            // Upon success of notificatoin, resets modal view
             setCreateReminderModalVisible(false);
             resetReminderModalFields();
+
+            // Refreshes to fetch data from backend again
             setRefreshKey((prev) => prev + 1);
         } catch (err: any) {
             alert("Creating reminder failed", err.message || "Something went wrong");
         }
     }
 
+    /**
+     * Changes the completed status of the reminders in the 
+     * backend. 
+     * @param reminderId The unique ID of the reminder that requires status update
+     */
     const changeReminderCompletedStatus = async (reminderId: string) => {
         try {
             const response = await updateReminderCompleteStatus(reminderId, token)
@@ -423,6 +455,8 @@ const HomeScreen = () => {
                 alert("Changing reminder status failed")
                 return
             }
+
+            // Deletes the attached notification to the reminder
             const notificationResponse = await deleteNotification(reminderId, token)
             
             if(notificationResponse.status !== 200) {
@@ -437,6 +471,14 @@ const HomeScreen = () => {
         }
     }
 
+    /**
+     * Fetches the reminder's details from the backend 
+     * when a user selects a specific reminder from the 
+     * list of reminders showing on the screen. 
+     * @param reminderId The unique ID of the reminder which 
+     * the user selected, required to fetch the specific reminder 
+     * from the backend.
+     */
     const fetchReminder = async (reminderId: string) => {
         console.log('get reminder pressed')
         try {
@@ -445,6 +487,10 @@ const HomeScreen = () => {
                 const data = response.data;
                 const reminderDate = new Date(data.remindAt);
                 
+                /** 
+                 * Sets the values with the selected reminder's fetched 
+                 * values to display in the modal view
+                */
                 setSelectedReminderId(data.reminderId)
                 setTitle(data.title);
                 setDescription(data.description);
@@ -453,6 +499,7 @@ const HomeScreen = () => {
                 setDisplayDate(reminderDate);
                 setDisplayTime(reminderDate);
 
+                // Variables to keep track of original values 
                 setOriginalTitle(data.title)
                 setOriginalDescription(data.description)
                 setoriginalRemindDate(reminderDate)
@@ -465,6 +512,12 @@ const HomeScreen = () => {
         }
     }
 
+    /**
+     * Changes the details of the current user's selected reminder 
+     * with the newly set values by the user in the Backend by patching. 
+     * This method only takes place if there is atleast one 
+     * change in the input field values.
+     */
     const patchReminder = async () => {
         const mergedCurrentRemindAt = new Date(remindDate);
         mergedCurrentRemindAt.setHours(remindTime.getHours());
@@ -507,16 +560,24 @@ const HomeScreen = () => {
                     }
                 }
 
+                // Refreshes key to refetch data
                 setRefreshKey(prev => prev + 1);
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");
         }
         
+        // Reset and close the modal view 
         resetReminderModalFields();
         setViewReminderModalVisible(false);
     };
 
+    /**
+     * Deletes the specific reminder when the user slides 
+     * a reminder to the right side. 
+     * @param reminderId The unique ID of the specific reminder to be deleted.
+     * @returns 
+     */
     const deleteCurrentReminder = async (reminderId: string) => {
         try {
             console.log('delete pressed', reminderId)
@@ -533,6 +594,8 @@ const HomeScreen = () => {
             }
 
             console.log('Reminder deleted.')
+
+            // Refreshes to refetch uhser's data
             setRefreshKey(prev => prev + 1)
         } catch (err: any) {
             alert("Deleting reminder failed", err.message || "Something went wrong");
