@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { SignoutButton } from "@/components/Buttons";
@@ -6,11 +8,19 @@ import { router } from "expo-router";
 import alert from "@/components/Alert";
 
 const SettingsScreen = () => {
+
+  /**
+   * Signs out the user by removing the stored token 
+   * and redirecting them to the login screen.
+   */
   const signOut = async () => {
     await AsyncStorage.removeItem("token");
     router.dismissTo('/login')
   }
 
+  /**
+   * Displays a confirmation alert before signing out.
+   */
   const throwAlert = () => {
     alert('Sign out', 'Are you sure?', [
         { text: 'Yes', onPress: () => signOut() },
