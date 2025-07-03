@@ -1,3 +1,12 @@
+/**
+ * The home page is responsible for showing 
+ * all things necessary within the home screen. For 
+ * example, the user's upcoming reminders are shows 
+ * as lists. The screen also contains a button to add 
+ * reminders. It also has a button to show all the 
+ * previously completed reminders.
+ */
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useRef } from "react";
 import { View, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image, Platform } from "react-native";
@@ -605,6 +614,9 @@ const HomeScreen = () => {
     return (
         <SafeAreaView style={styles.mainContainer}>
 
+            {/* This modal view appears when the user presses 
+            the "+" sign on the screen. This pulls up the 
+            modal view which allows the user to create reminders */}
             <CreateReminderModal
                 visible={createReminderModalVisible}
                 onClose={() => {setCreateReminderModalVisible(false); resetReminderModalFields()}}
@@ -627,6 +639,10 @@ const HomeScreen = () => {
                 setDisplayTime={setDisplayTime}
             />
 
+            {/* This modal view appears when the user presses a 
+            reminder, which pulls up a modal view with the specific 
+            reminder's details showing in the input field, allowing 
+            the users to update the reminder if necessary. */}
             <CreateReminderModal
                 visible={viewReminderModalVisible}
                 onClose={() => {setViewReminderModalVisible(false); resetReminderModalFields()}}
@@ -649,6 +665,10 @@ const HomeScreen = () => {
                 setDisplayTime={setDisplayTime}
             />
 
+            {/* This modal view appears when the user presses 
+            the "show all" button on the screen. This pulls up the 
+            modal view which contains all the previously completed 
+            reminders. */}
             <Modal animationType="slide" transparent visible={showAllModalVisible} onRequestClose={() => setShowAllModalVisible(false)}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
@@ -657,6 +677,9 @@ const HomeScreen = () => {
                             <DoneCancelButton text="Done" onPress={() => setShowAllModalVisible(false)} />
                         </View>
 
+                        {/* If the completed reminders list is empty, shows an 
+                        image. If it is not empty, shows the reminders on the 
+                        screen */}
                         <View style={styles.modalReminderContainer}>
                             <ScrollView style={{ flex: 1 }}>
                                 {completedReminders.length === 0 ? (
@@ -683,6 +706,7 @@ const HomeScreen = () => {
                 </View>
             </Modal>
 
+            {/* Intro section with username greeting and settings button */}
             <View style={styles.introContainer}>
                 <View style={styles.leftIntroContainer}>
 
@@ -697,6 +721,7 @@ const HomeScreen = () => {
                 </View>
             </View>
 
+            {/* Calendar layout with placeholder containers and "+" button for adding reminders */}
             <View style={styles.calendarContainer}>
                 <View style={styles.monthContainer}></View>
 
@@ -707,6 +732,9 @@ const HomeScreen = () => {
                 </View>
             </View>
 
+            {/* If the incomplete reminders list is empty, shows an 
+            image. If it is not empty, shows the reminders on the 
+            screen */}
             <View style={styles.reminderContainer}>
                 <ScrollView style={{ flex: 1 }}>
                     {incompletedReminders.length === 0 ? (
@@ -730,7 +758,7 @@ const HomeScreen = () => {
                 </ScrollView>
             </View>
 
-
+            {/* Button to open modal displaying all completed reminders */}
             <View style={styles.showAllContainer}>
                 <ShowAllButton width={'20%'} onPress={() => setShowAllModalVisible(true)} />
             </View>
