@@ -1,3 +1,5 @@
+// Src: https://stackoverflow.com/questions/65481226/react-native-alert-alert-only-works-on-ios-and-android-not-web
+
 import { Alert, Platform } from 'react-native'
 
 const alertPolyfill = (title, description, options = [], extra) => {
