@@ -1,3 +1,8 @@
+/**
+ * A button used to show all the previously completed 
+ * reminders, on a new modal view.
+ */
+
 import React from "react";
 import { Text, StyleSheet, Pressable, ViewStyle, DimensionValue } from 'react-native'
 

@@ -1,3 +1,7 @@
+/**
+ * Appears as lists of reminders on the UI.
+ */
+
 import React, { useRef } from "react";
 import { Animated, Image, View, Text, StyleSheet, Pressable, TouchableOpacity } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";

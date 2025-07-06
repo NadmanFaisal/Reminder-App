@@ -1,3 +1,11 @@
+/**
+ * Used as a box to welcome the users 
+ * who log into the system. Without height 
+ * and width being passed as props to the 
+ * component, it defaults to 50% and 75% 
+ * respectively. 
+ */
+
 import React from "react";
 import { DimensionValue, StyleSheet, Text, View, ViewStyle } from "react-native";
 
