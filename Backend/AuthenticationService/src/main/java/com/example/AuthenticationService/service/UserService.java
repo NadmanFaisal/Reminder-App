@@ -1,3 +1,8 @@
+/**
+ * Service class that handles business logic for user authentication,
+ * including signup, login, token validation, and user retrieval.
+ */
+
 package com.example.AuthenticationService.service;
 
 import java.util.List;
@@ -25,6 +30,13 @@ public class UserService {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
     private final JwtUtil jwtUtil;
 
+    /**
+     * Registers a new user by encrypting the password and saving to the database.
+     * Generates a JWT token upon successful signup.
+     *
+     * @param userRequest User registration details
+     * @return SignInResponse containing email, username, and JWT token
+     */
     public SignInResponse createUser(UserRequest userRequest) {
         String encryptedPassword = encoder.encode(userRequest.password());
         User user = User.builder()
@@ -38,6 +50,12 @@ public class UserService {
         return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
     }
 
+    /**
+     * Validates a JWT token and returns user details if the token is valid.
+     *
+     * @param tokenRequest Contains the JWT token to be validated
+     * @return SignInResponse with user information and the same token
+     */
     public SignInResponse validateUser(TokenRequest tokenRequest) {
         boolean valid = jwtUtil.validateJwtToken(tokenRequest.token());
         if(!valid) {
@@ -55,6 +73,13 @@ public class UserService {
         return new SignInResponse(user.getEmail(), user.getUsername(), tokenRequest.token());
     }
 
+    /**
+     * Logs in a user by checking email existence and matching the password.
+     * If successful, generates a new JWT token.
+     *
+     * @param userRequest Login credentials
+     * @return SignInResponse with user info and token
+     */
     public SignInResponse loginUser(UserRequest userRequest) {
         Optional<User> fetchedUser = userRepository.findById(userRequest.email().toLowerCase());
 
@@ -73,6 +98,11 @@ public class UserService {
         return new SignInResponse(user.getEmail(), user.getUsername(), jwtToken);
     }
 
+    /**
+     * Retrieves a list of all registered users as simplified UserResponse objects.
+     *
+     * @return List of UserResponse DTOs
+     */
     public List<UserResponse> getAllusers() {
         return userRepository.findAll()
             .stream()
@@ -80,6 +110,12 @@ public class UserService {
             .toList();
     }
 
+    /**
+     * Finds a user by email (case-insensitive).
+     *
+     * @param email User email to search for
+     * @return Optional containing the User if found
+     */
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findById(email.toLowerCase());
     }
