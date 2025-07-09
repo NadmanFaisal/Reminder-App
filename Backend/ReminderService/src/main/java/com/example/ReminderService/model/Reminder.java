@@ -10,7 +10,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * Represents a Reminder document stored in the MongoDB "Reminders" collection.
+ * This entity captures all necessary details for managing a user's reminder.
+ */
 @Document(value = "Reminders")
 @AllArgsConstructor
 @NoArgsConstructor

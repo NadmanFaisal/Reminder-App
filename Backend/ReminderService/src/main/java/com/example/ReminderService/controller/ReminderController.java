@@ -19,6 +19,10 @@ import com.example.ReminderService.service.ReminderService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * REST controller that handles all incoming HTTP requests related to reminders.
+ * Supports operations like creation, update, retrieval, and soft deletion.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ReminderService")
@@ -26,6 +30,12 @@ public class ReminderController {
 
     private final ReminderService reminderService;
 
+    /**
+     * Creates a new reminder and prepares a corresponding NotificationRequest.
+     *
+     * @param reminderRequest Reminder creation request payload
+     * @return ReminderResponse containing created reminder details
+     */
     @PostMapping("/CreateReminder")
     @ResponseStatus(HttpStatus.CREATED)
     public ReminderResponse createUser(@RequestBody ReminderRequest reminderRequest) {
@@ -46,18 +56,36 @@ public class ReminderController {
         return reminderResponse;
     }
 
+    /**
+     * Retrieves all reminders for a specific user.
+     *
+     * @param userEmail Email of the user
+     * @return List of ReminderResponse objects
+     */
     @GetMapping("/GetUserReminders")
     @ResponseStatus(HttpStatus.OK)
     public List<ReminderResponse> getUserReminders(@RequestParam String userEmail) {
         return reminderService.getUserReminders(userEmail);
     }
 
+    /**
+     * Retrieves a specific reminder by its ID.
+     *
+     * @param reminderId Unique ID of the reminder
+     * @return ReminderResponse object
+     */
     @GetMapping("/GetReminder")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse getReminder(@RequestParam String reminderId) {
         return reminderService.getReminder(reminderId);
     }
 
+    /**
+     * Updates the completion status of a reminder.
+     *
+     * @param reminderRequest Contains reminder ID and updated status
+     * @return Updated ReminderResponse object
+     */
     @PatchMapping("/UpdateCompleteStatus")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse updateCompleteStatus(@RequestBody ReminderRequest reminderRequest) {
@@ -76,6 +104,12 @@ public class ReminderController {
         return reminderService.updateCompleteStatus(reminderRequest);
     }
     
+    /**
+     * Toggles the deleted status of a reminder (soft delete).
+     *
+     * @param reminderRequest Contains reminder ID and new deletion status
+     * @return Updated ReminderResponse object
+     */
     @PatchMapping("/ChangeReminderDeleteStatus")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse updateDeleteStatus(@RequestBody ReminderRequest reminderRequest) {
@@ -94,6 +128,12 @@ public class ReminderController {
         return reminderService.updateDeleteStatus(reminderRequest);
     }
 
+    /**
+     * Updates the content of an existing reminder (title, description, time, etc.).
+     *
+     * @param reminderRequest - Request with updated fields
+     * @return Updated ReminderResponse object
+     */
     @PatchMapping("/UpdateReminder")
     @ResponseStatus(HttpStatus.OK)
     public ReminderResponse updateReminder(@RequestBody ReminderRequest reminderRequest) {
