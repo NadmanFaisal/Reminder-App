@@ -71,12 +71,6 @@ services:
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      
-
-  # logging-service:
-  #   build: NotificationService/
-  #   ports:
-  #     - "8083:8083"
 
   notification-service:
     build: Backend/NotificationService/
