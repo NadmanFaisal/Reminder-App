@@ -28,6 +28,31 @@ The Reminder App is a simple, intuitive, and efficient mobile application design
 - Spring boot backend
 - Lombok for boilerplate reduction and injection
 
+## Tech Stack
+
+- **Frontend:** React Native, Expo
+- **Backend:** Spring Boot (Java)
+- **Authentication:** JWT, BCrypt
+- **Database:** MongoDB Atlas
+- **Containerization:** Docker, Docker Compose
+- **Service Discovery:** Eureka Server
+- **API Gateway:** Spring Cloud Gateway
+- **CI/CD:** GitHub Actions → Docker Hub
+
+## Project Structure
+```
+/
+├── AuthenticationService/
+├── api-gateway/
+├── eureka-server/
+├── LoggingService/
+├── NotificationService/
+├── ReminderService/
+├── Frontend/
+├── docker-compose.yml
+├── .env
+```
+
 ## Setup Instructions
 
 ### MongoDB Setup
@@ -164,3 +189,14 @@ docker run -it --rm \
   -p 8081:8081 \
   carbonatedwaterr/reminder-app-frontend
 ```
+
+## CI Pipelines
+
+This project utilizes `github actions` to build docker images for the services and frontend, and push them to my personal `docker hub`. The images to the `docker hub` can be found here:
+```
+https://hub.docker.com/repositories/carbonatedwaterr
+```
+
+## Contributing
+
+Contributions are welcome! If you’d like to propose a feature or report a bug, feel free to open an issue or submit a pull request. Please follow standard Git workflow and ensure services build before submission.
