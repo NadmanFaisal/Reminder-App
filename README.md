@@ -7,11 +7,11 @@ The Reminder App is a simple, intuitive, and efficient mobile application design
 ## Application Features
 
 - Secure user sign up, log in, and authentication
-- Dashboard showing all incompleted reminders
+- Dashboard showing all incomplete reminders
 - Easily add reminders using "+" button
 - Modal view to provide crucial reminder details
-- Update incompleted reminders from the dashboard
-- Delete reminders by left-swipping on them
+- Update incomplete reminders from the dashboard
+- Delete reminders by left-swiping on them
 - Real-time notification update, even when the app is not in use
 - See previous completed reminders by pressing the "see all" button
 - Undo complete on a reminder
@@ -19,7 +19,7 @@ The Reminder App is a simple, intuitive, and efficient mobile application design
 ## Software Features
 
 - Secure authentication with BCrypt hashing
-- Microservices style architecture (Authentication service, reminder service, notification service, API Gatewat, Eureka server)
+- Microservices style architecture (Authentication service, reminder service, notification service, API Gateway, Eureka server)
 - Real-time reminders and notifications
 - Easy configuration and env setup (env files found in the root directory)
 - MongoDB integration separate for each service ensuring decoupleness
@@ -79,9 +79,11 @@ Each service in the backend needs to be rebuilt by maven before it is containeri
 
 ### Authentication Service
 
-To package the AuthenticationService and run it using mvn, navigate to the AuthenticationService directory if you haven't and run the following command:
+To package the AuthenticationService and run it using mvn, navigate to the root directory if you haven't and run the following command:
 ```
-./mvnw clean package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/AuthenticationService \
+  && ./mvnw clean package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
 ```
 
 To containerize and run the service:
@@ -92,9 +94,11 @@ docker run -p 8082:8082 reminder/authentication-service
 
 ### API Gateway
 
-To package the API Gateway and run it using mvn, navigate to the api-gateway directory if you haven't and run the following command:
+To package the API Gateway and run it using mvn, navigate to the root directory if you haven't and run the following command:
 ```
-./mvnw clean package && java -jar target/api-gateway-0.0.1-SNAPSHOT.jar 
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/api-gateway \
+  && ./mvnw clean package && java -jar target/api-gateway-0.0.1-SNAPSHOT.jar 
 ```
 
 To containerize and run the gateway:
@@ -119,9 +123,11 @@ docker run -p 8761:8761 reminder/eureka-server
 
 ### Notification Service
 
-To package the Notification Service and run it using mvn, navigate to the NotificationService directory if you haven't and run the following command:
+To package the Notification Service and run it using mvn, navigate to the root directory if you haven't and run the following command:
 ```
-./mvnw clean package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/NotificationService \
+  && ./mvnw clean package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
 ```
 
 To containerize and run the service:
@@ -132,9 +138,11 @@ docker run -p 8084:8084 reminder/notification-service
 
 ### Reminder Service
 
-To package the Reminder Service and run it using mvn, navigate to the Reminder Service directory if you haven't and run the following command:
+To package the Reminder Service and run it using mvn, navigate to the root directory if you haven't and run the following command:
 ```
-./mvnw clean package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/ReminderService \
+  && ./mvnw clean package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar
 ``` 
 
 To containerize and run the service:
@@ -154,8 +162,6 @@ mvn clean package
 ```
 
 And then change directory to the root (where the compose file is located) and build the docker compose file with the needed env vars using the .env file:
-
-
 ```
 export $(grep -v '^#' .env | xargs)
 docker compose --env-file .env up --build
