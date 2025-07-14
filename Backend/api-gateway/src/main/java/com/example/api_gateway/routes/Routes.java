@@ -1,3 +1,10 @@
+/*
+ * This class is responsible for redirecting HTTP requests 
+ * received by the API-Gateway to the responsible microservices.
+ * It also applies JWT authentication filters to protected 
+ * services.
+ */
+
 package com.example.api_gateway.routes;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +24,7 @@ public class Routes {
 
     private final JwtFilter jwtFilter;
 
+    // Base URLs for each backend microservice, injected from application properties
     @Value("${AUTHENTICATION_SERVICE_URL}")
     private String authServiceURL;
     @Value("${LOGGING_SERVICE_URL}")
@@ -26,13 +34,23 @@ public class Routes {
     @Value("${REMINDER_SERVICE_URL}")
     private String reminderServiceURL;
 
+    // Inject JwtFilter to apply it on protected service routes
     public Routes(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
+    /**
+     * Defines the route mappings between API Gateway 
+     * endpoints and backend services. Applies JWT filtering 
+     * to protected routes (Except for authentication service).
+     * 
+     * @return RouterFunction that handles HTTP routing logic
+     */
     @Bean
     public RouterFunction<ServerResponse> userServiceRoute() {
         return GatewayRouterFunctions.route("api-gateway")
+
+            // Routes for AuthenticationService (no auth filter)
             .route(
                 RequestPredicates.path("/AuthenticationService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
@@ -40,6 +58,8 @@ public class Routes {
                         .or(RequestPredicates.method(HttpMethod.GET))),
                 HandlerFunctions.http(authServiceURL)
             )
+
+            // Routes for LoggingService (requires JWT filter)
             .route(
                 RequestPredicates.path("/LoggingService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
@@ -49,6 +69,8 @@ public class Routes {
                     req -> HandlerFunctions.http(loggingServiceURL).handle(req)
                 )
             )
+
+            // Routes for NotificationService (requires JWT filter)
             .route(
                 RequestPredicates.path("/NotificationService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
@@ -61,15 +83,8 @@ public class Routes {
                     req -> HandlerFunctions.http(notificationServiceURL).handle(req)
                 )
             )
-            // .route(
-            //     RequestPredicates.path("/NotificationService/**")
-            //         .and(RequestPredicates.method(HttpMethod.OPTIONS)
-            //             .or(RequestPredicates.method(HttpMethod.POST))
-            //             .or(RequestPredicates.method(HttpMethod.GET))
-            //             .or(RequestPredicates.method(HttpMethod.PUT))
-            //             .or(RequestPredicates.method(HttpMethod.PATCH))),
-            //     HandlerFunctions.http("http://localhost:8084")
-            // )
+
+            // Routes for ReminderService (requires JWT filter)
             .route(
                 RequestPredicates.path("/ReminderService/**")
                     .and(RequestPredicates.method(HttpMethod.OPTIONS)
@@ -82,6 +97,8 @@ public class Routes {
                     req -> HandlerFunctions.http(reminderServiceURL).handle(req)
                 )
             )
+
+            // Build the final route configuration
             .build();
     }   
 }

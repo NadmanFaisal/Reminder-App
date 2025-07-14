@@ -1,121 +1,208 @@
 # Reminder-App
 
-To connect to the database, crete a MongoDB cluster and add the following env:
+## Introduction
 
-For linux:
+The Reminder App is a simple, intuitive, and efficient mobile application designed to help users manage their daily tasks and important events without missing a beat! Whether it’s remembering to take medication, attend a meeting, or water your plants, this app ensures that nothing falls through the cracks. With an easy-to-use interface and customizable notifications, users can schedule, view, and manage reminders with ease — boosting productivity and reducing mental clutter.
+
+## Application Features
+
+- Secure user sign up, log in, and authentication
+- Dashboard showing all incomplete reminders
+- Easily add reminders using "+" button
+- Modal view to provide crucial reminder details
+- Update incomplete reminders from the dashboard
+- Delete reminders by left-swiping on them
+- Real-time notification update, even when the app is not in use
+- See previous completed reminders by pressing the "see all" button
+- Undo complete on a reminder
+
+## Software Features
+
+- Secure authentication with BCrypt hashing
+- Microservices style architecture (Authentication service, reminder service, notification service, API Gateway, Eureka server)
+- Real-time reminders and notifications
+- Easy configuration and env setup (env files found in the root directory)
+- MongoDB integration separate for each service ensuring decoupleness
+- Docker and docker compose support
+- React native frontend
+- Spring boot backend
+- Lombok for boilerplate reduction and injection
+
+## Tech Stack
+
+- **Frontend:** React Native, Expo
+- **Backend:** Spring Boot (Java)
+- **Authentication:** JWT, BCrypt
+- **Database:** MongoDB Atlas
+- **Containerization:** Docker, Docker Compose
+- **Service Discovery:** Eureka Server
+- **API Gateway:** Spring Cloud Gateway
+- **CI/CD:** GitHub Actions → Docker Hub
+
+## Project Structure
+```
+/
+├── AuthenticationService/
+├── api-gateway/
+├── eureka-server/
+├── LoggingService/
+├── NotificationService/
+├── ReminderService/
+├── Frontend/
+├── docker-compose.yml
+├── .env
+```
+
+## Setup Instructions
+
+### MongoDB Setup
+
+Create a MongoDB cluster and add the following env vars:
+
+#### Linux/macOS
+```
 export MONGO_USERNAME=your_username
 export MONGO_PASSWORD=your_password
+```
 
-For windows:
+#### Windows
+```
 $env:MONGO_USERNAME="your_username"
-$env:MONGO_PASSWORD="your_password$"
+$env:MONGO_PASSWORD="your_password"
+```
 
-To package the AuthenticationService and run it using mvn
+As such, you can connect your services to their respective mongoDB databases.
 
-./mvnw clean package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
+## Running Backend Services
 
-To docker build:
+Each service in the backend needs to be rebuilt by maven before it is containerized and run using docker. Below are the commands:
 
+### Authentication Service
+
+To package the AuthenticationService and run it using mvn, navigate to the root directory if you haven't and run the following command:
+```
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/AuthenticationService \
+  && ./mvnw clean package && java -jar target/AuthenticationService-0.0.1-SNAPSHOT.jar 
+```
+
+To containerize and run the service:
+```
 docker build -t reminder/authentication-service .
-
-To docker run:
-
 docker run -p 8082:8082 reminder/authentication-service
+```
 
-To package the api-gateway and run it using mvn
+### API Gateway
 
-./mvnw clean package && java -jar target/api-gateway-0.0.1-SNAPSHOT.jar 
+To package the API Gateway and run it using mvn, navigate to the root directory if you haven't and run the following command:
+```
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/api-gateway \
+  && ./mvnw clean package && java -jar target/api-gateway-0.0.1-SNAPSHOT.jar 
+```
 
-To docker build:
-
+To containerize and run the gateway:
+```
 docker build -t reminder/api-gateway-service .
-
-To docker run:
-
 docker run -p 8080:8080 reminder/api-gateway-service
+```
 
-To package the eureka-server and run it using mvn
+### Eureka Server
 
+To package the Eureka Server and run it using mvn, navigate to the eureka-server directory if you haven't and run the following command:
+```
 ./mvnw clean package && java -jar target/eureka-server-0.0.1-SNAPSHOT.jar 
+```
 
-To docker build:
+To containerize and run the server:
 
+```
 docker build -t reminder/eureka-server .
-
-To docker run:
-
 docker run -p 8761:8761 reminder/eureka-server
+```
 
-To package the LoggingService and run it using mvn
+### Notification Service
 
-./mvnw clean package && java -jar target/LoggingService-0.0.1-SNAPSHOT.jar 
+To package the Notification Service and run it using mvn, navigate to the root directory if you haven't and run the following command:
+```
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/NotificationService \
+  && ./mvnw clean package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
+```
 
-To docker build:
-
-docker build -t reminder/logging-service .
-
-To docker run:
-
-docker run -p 8083:8083 reminder/logging-service
-
-To package the NotificationService and run it using mvn
-
-./mvnw clean package && java -jar target/NotificationService-0.0.1-SNAPSHOT.jar 
-
-To docker build:
-
+To containerize and run the service:
+```
 docker build -t reminder/notification-service .
-
-To docker run:
-
 docker run -p 8084:8084 reminder/notification-service
+```
 
-To package the ReminderService and run it using mvn
+### Reminder Service
 
-./mvnw clean package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar 
+To package the Reminder Service and run it using mvn, navigate to the root directory if you haven't and run the following command:
+```
+export $(grep -v '^#' .env | xargs) \
+  && cd Backend/ReminderService \
+  && ./mvnw clean package && java -jar target/ReminderService-0.0.1-SNAPSHOT.jar
+``` 
 
-To docker build:
-
+To containerize and run the service:
+```
 docker build -t reminder/reminder-service .
-
-To docker run:
-
 docker run -p 8085:8085 reminder/reminder-service
+```
 
-To run the docker compose:
+### Docker Compose
 
-docker compose up
+Before using docker compose, if a service has been updated, you need to go to the specific directory and rebuild it using maven commands, and then run the docker compose. 
 
+For example, if authentication service has been updated:
+```
+cd AuthenticationService
+mvn clean package
+```
 
-To Start each service using the automated script:
-
-cd Backend
-chmod +x start-backend.sh
-./start-backend.sh
-
-To stop
-in your terminal, write 
-
-
-Features:
-User data is encrypted using BCryptHashing
-Lombok for data injection
-
-================= DEV NOTES ==================
-
-Whenver making something for reminder service, ensure if it is related to notification service. Make sure to  update notification service as well if required.
-
+And then change directory to the root (where the compose file is located) and build the docker compose file with the needed env vars using the .env file:
+```
 export $(grep -v '^#' .env | xargs)
-
 docker compose --env-file .env up --build
+```
 
+To stop docker compose:
+```
+docker compose down
+```
+
+## Running Frontend
+
+To run the frontend locally, simple navigate to `frontend` from the root directory and ensure all the dependencies are installed:
+```
+npm install
+```
+
+Then run the following command to start the frontend:
+```
+npx expo start
+```
+## Frontend Docker
+
+The frontend can also be containerized using Dockers. To build an image of the frontend, change directory to the `frontend` and run the following command to build and then run it:
+```
 docker build -t react_native_app ./Frontend
-
-After building through docker compose:
-
 docker run -it --rm \
   -p 19006:19006 \
   -p 19001:19001 \
   -p 19002:19002 \
   -p 8081:8081 \
   carbonatedwaterr/reminder-app-frontend
+```
+
+## CI Pipelines
+
+This project utilizes `github actions` to build docker images for the services and frontend, and push them to my personal `docker hub`. The images to the `docker hub` can be found here:
+```
+https://hub.docker.com/repositories/carbonatedwaterr
+```
+
+## Contributing
+
+Contributions are welcome! If you’d like to propose a feature or report a bug, feel free to open an issue or submit a pull request. Please follow standard Git workflow and ensure services build before submission.

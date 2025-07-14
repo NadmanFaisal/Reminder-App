@@ -1,4 +1,10 @@
-// components/ReminderModal.tsx
+/**
+ * A Modal view component, which is used as a 
+ * screen to take inputs for details for anything 
+ * related to a reminder. This modal view is used 
+ * as a screen to create new reminders, or to 
+ * patch existing reminders. 
+ */
 
 import React from 'react'
 import { Modal, View, Keyboard, TouchableWithoutFeedback, StyleSheet } from 'react-native'
@@ -100,55 +106,54 @@ export const CreateReminderModal = (props: CreateReminderProps) => {
 }
 
 const styles = StyleSheet.create({
-    centeredView: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    },
-    modalView: {
-        width: '100%',
-        height: '65%', 
-        backgroundColor: '#FFFBDE',
-        borderRadius: 15,
-        borderTopWidth: 4,
-        alignItems: 'center',
-        padding: 15
-    },
-    modalButtonContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '10%',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-
-    titleContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '15%',
-        width: '100%',
-    },
-    descriptionContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '25%',
-        width: '100%',
-    },
-    dateAndTimeContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '15%',
-        width: '100%',
-        justifyContent: 'space-between',
-    },
-    dateTimePickerContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        height: '35%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
+  centeredView: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalView: {
+      width: '100%',
+      height: '65%', 
+      backgroundColor: '#FFFBDE',
+      borderRadius: 15,
+      borderTopWidth: 4,
+      alignItems: 'center',
+      padding: 15
+  },
+  modalButtonContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '10%',
+      width: '100%',
+      justifyContent: 'space-between',
+  },
+  titleContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '15%',
+      width: '100%',
+  },
+  descriptionContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '25%',
+      width: '100%',
+  },
+  dateAndTimeContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '15%',
+      width: '100%',
+      justifyContent: 'space-between',
+  },
+  dateTimePickerContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      height: '35%',
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+  }
 })
 

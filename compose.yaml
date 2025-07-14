@@ -1,55 +1,58 @@
 services:
 
+  # Builds react native frontend
   react_native_app:
     build:
-      context: ./Frontend/
+      context: ./Frontend/          # Location of the Dockerfile
       args:
-        - NODE_ENV=development
+        - NODE_ENV=development      # Build time arguement to set environment
     environment:
-      - NODE_ENV=development
-    tty: true
+      - NODE_ENV=development        # Sets the runtime environment variable inside the container
+    tty: true                       # Makes the container run interactively
     ports:
-      - '19006:19006'
-      - '19001:19001'
-      - '19002:19002'
-      - '8081:8081'
+      - '19006:19006'               # Expo dev tools
+      - '19001:19001'               # Expo updates for mobile apps
+      - '19002:19002'               # Expo logs
+      - '8081:8081'                 # Metro builder
     volumes:
-      - ./Frontend:/opt/react_native_app:delegated
-      - notused:/opt/react_native_app/node_modules
-    working_dir: /opt/react_native_app
-    entrypoint: ["/bin/sh", "-c"]
-    command:
+      - ./Frontend:/opt/react_native_app:delegated    # Mounts project source code into the container with delegated I/O
+      - notused:/opt/react_native_app/node_modules    # Prevents node_modules from being overwritten by host
+    working_dir: /opt/react_native_app                # Sets the working directory inside the container
+    entrypoint: ["/bin/sh", "-c"]                     # Custom shell to execute multi-line command
+    command:                         # Installs dependencies and starts expo with tunnel
     - |
       npm install && npx expo start --tunnel
     healthcheck:
-      disable: true
+      disable: true                  # Disables health checks for this container
 
+  # Does not persist data, needs fixing
   mongodb:
-    image: mongo:latest
-    container_name: "mongodb"
+    image: mongo:latest              # Official image for mongo from DockerHub
+    container_name: "mongodb"        # Names the container "mongodb" for easier reference
     ports:
-      - 27070:27017
+      - 27070:27017                   # Maps port 27017 in the container (MongoDB's default port)
+                                      # to port 27017 in host
 
   eureka-server:
-    build: Backend/eureka-server/
+    build: Backend/eureka-server/     # Location of the dockerfile
     ports:
-      - "8761:8761"
-    healthcheck:
+      - "8761:8761"                   # Maps the container's port to host's 8761
+    healthcheck:                      # Health check for service readiness
       test: ["CMD-SHELL", "wget -q --spider http://localhost:8761/actuator/health || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 15s
+      interval: 5s                    # Health checks every 5 seconds
+      timeout: 3s                     # Health check must finish within 3 seconds
+      retries: 10                     # Docker will try the command 10 times
+      start_period: 15s               # Gives the container 15 seconds to start up before health checks begin
 
   api-gateway:
-    build: Backend/api-gateway/
-    depends_on:
+    build: Backend/api-gateway/       # Location for the dockerfile
+    depends_on:                       # Starts after eureka starts, depending on it's health
       eureka-server:
         condition: service_healthy
         restart: true
-    ports:
+    ports:                            # Expose Gateway on port 8080
       - "8080:8080"
-    environment:
+    environment:                      # Pass necessary service URLs and JWT secrets
       AUTHENTICATION_SERVICE_URL: ${AUTHENTICATION_SERVICE_URL}
       LOGGING_SERVICE_URL: ${LOGGING_SERVICE_URL}
       NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
@@ -59,34 +62,28 @@ services:
       IP_ADDRESS: ${IP_ADDRESS}
 
   authentication-service:
-    build: Backend/AuthenticationService/
-    depends_on:
+    build: Backend/AuthenticationService/       # Location of the dockerfile
+    depends_on:                                 # Starts after eureka starts, depending on it's health
       eureka-server:
         condition: service_healthy
         restart: true
-    ports:
+    ports:                                      # Expose Gateway on port 8082
       - "8082:8082"
-    environment:
+    environment:                                # Pass necessary service env vars
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      
-
-  # logging-service:
-  #   build: NotificationService/
-  #   ports:
-  #     - "8083:8083"
 
   notification-service:
-    build: Backend/NotificationService/
-    depends_on:
+    build: Backend/NotificationService/       # Location of the dockerfile
+    depends_on:                               # Starts after eureka starts, depending on it's health
       eureka-server:
         condition: service_healthy
         restart: true
-    ports:
+    ports:                                    # Expose Gateway on port 8084
       - "8084:8084"
-    environment:
+    environment:                              # Pass necessary service env vars
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
@@ -94,19 +91,20 @@ services:
       SPRING_APPLICATION_NAME: NotificationService
 
   reminder-service:
-    build: Backend/ReminderService/
-    depends_on:
+    build: Backend/ReminderService/       # Location of the dockerfile
+    depends_on:                           # Starts after eureka starts, depending on it's health
       eureka-server:
         condition: service_healthy
         restart: true
-    ports:
+    ports:                                # Expose Gateway on port 8085
       - "8085:8085"
-    environment:
+    environment:                          # Pass necessary service env vars
       EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
       MONGO_USERNAME: ${MONGO_USERNAME}
       MONGO_PASSWORD: ${MONGO_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       NOTIFICATION_SERVICE_URL: ${NOTIFICATION_SERVICE_URL}
 
+# Dummy volume used to prevent node_modules from overwriting host code
 volumes:
   notused:

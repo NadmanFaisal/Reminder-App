@@ -13,12 +13,22 @@ import com.example.NotificationService.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service layer for handling business logic related to notifications.
+ * This includes creation, retrieval, updates, and soft deletion of notifications.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationService {
     private final NotificationRepository notificationRepository;
 
+    /**
+     * Creates a new notification and saves it to the database.
+     *
+     * @param notificationRequest Request payload with notification details
+     * @return NotificationResponse - The saved notification as a response object
+     */
     public NotificationResponse createNotification(NotificationRequest notificationRequest) {
         Notification notification = Notification.builder()
             .reminderId(notificationRequest.reminderId())
@@ -45,6 +55,12 @@ public class NotificationService {
         );
     }
 
+    /**
+     * Retrieves all non-deleted notifications for a given user.
+     *
+     * @param email User's email
+     * @return List of NotificationResponse objects
+     */
     public List<NotificationResponse> getAllUserNotifications(String email) {
         return notificationRepository.findAllByUserEmail(email)
             .stream()
@@ -62,6 +78,11 @@ public class NotificationService {
             .toList();
     }
 
+    /**
+     * Updates an existing notification's properties based on the provided data.
+     *
+     * @param notificationRequest The updated notification details
+     */
     public void updateNotification(NotificationRequest notificationRequest) {
         Optional<Notification> fetchedNotification = this.getNotificationByReminderId(notificationRequest.reminderId());
 
@@ -93,14 +114,32 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
+    /**
+     * Retrieves a notification by its unique ID.
+     *
+     * @param notificationId The notification's ID
+     * @return Optional containing the notification if found
+     */
     public Optional<Notification> getNotificationById(String notificationId) {
         return notificationRepository.findById(notificationId);
     }
 
+    /**
+     * Retrieves a notification by its associated reminder ID.
+     *
+     * @param reminderId The reminder ID
+     * @return Optional containing the notification if found
+     */
     public Optional <Notification> getNotificationByReminderId(String reminderId) {
         return notificationRepository.findByReminderId(reminderId);
     }
 
+    /**
+     * Soft-deletes or restores a notification by toggling its `deleted` flag.
+     *
+     * @param notificationRequest Contains the reminder ID used to locate the notification
+     * @return NotificationResponse representing the updated notification
+     */
     public NotificationResponse deleteNotificationByReminderId(NotificationRequest notificationRequest) {
         Optional <Notification> fetchedNotification = this.getNotificationByReminderId(notificationRequest.reminderId());
         

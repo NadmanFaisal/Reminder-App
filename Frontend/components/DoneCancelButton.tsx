@@ -1,3 +1,8 @@
+/**
+ * A button class which allows users to define 
+ * done and cancel functions on the screen.
+ */
+
 import React, { StyleSheet, Pressable, Text } from 'react-native'
 
 type buttonProp = {

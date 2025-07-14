@@ -1,3 +1,8 @@
+/*
+ * This class is responsible for logging the HTTP requests
+ * received by the API gatewat from the frontend. 
+ */
+
 package com.example.api_gateway.filter;
 
 import java.io.IOException;
@@ -9,9 +14,16 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 
-@Component
+@Component  // Registers this class as a spring-managed component
 public class LoggingFilter implements Filter {
 
+    /**
+     * Intercepts every incoming HTTP request and logs its method and URI.
+     * 
+     * @param request  the incoming servlet request
+     * @param response the outgoing servlet response
+     * @param chain    the filter chain to pass control to the next filter
+     */
     @Override
     public void doFilter(
             jakarta.servlet.ServletRequest request,

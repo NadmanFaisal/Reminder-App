@@ -1,3 +1,9 @@
+/*
+ * This class handles incoming HTTP requests related to user authentication.
+ * It maps REST API endpoints to corresponding service-layer methods 
+ * such as signup, login, token validation, and user retrieval.
+ */
+
 package com.example.AuthenticationService.controller;
 
 import java.util.List;
@@ -20,13 +26,20 @@ import com.example.AuthenticationService.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/AuthenticationService")
+@RestController                             // Marks this class as a spring rest controller
+@RequiredArgsConstructor                    // Generates constructor for final fields (userService)
+@RequestMapping("/AuthenticationService")   // Base path for all HTTP endpoints related to authentication
 public class UserController {
 
     private final UserService userService;
     
+    /**
+     * Handles user registration requests.
+     * Throws UserAlreadyExistsException if the email is already registered.
+     *
+     * @param userRequest User registration data (email, username, password)
+     * @return SignInResponse containing JWT token and user info
+     */
     @PostMapping("/SignUp")
     @ResponseStatus(HttpStatus.CREATED)
     public SignInResponse createUser(@RequestBody UserRequest userRequest) {
@@ -36,12 +49,26 @@ public class UserController {
         return userService.createUser(userRequest);
     }
 
+    /**
+     * Handles user JWT token validation
+     * Returns a refreshed or validated token response if valid.
+     *
+     * @param tokenRequest - Contains the JWT token to be validated
+     * @return SignInResponse with validated token or user info
+     */
     @PostMapping("/ValidateMe")
     @ResponseStatus(HttpStatus.OK)
     public SignInResponse validateUser(@RequestBody TokenRequest tokenRequest) {
         return userService.validateUser(tokenRequest);
     }
 
+    /**
+     * Handles user login requests.
+     * Throws UserDoesNotExistException if the email is not registered.
+     *
+     * @param userRequest - Login credentials (email, password)
+     * @return SignInResponse containing JWT token and user info
+     */
     @PostMapping("/LogIn")
     @ResponseStatus(HttpStatus.OK)
     public SignInResponse loginUser(@RequestBody UserRequest userRequest) {
@@ -51,6 +78,11 @@ public class UserController {
         return userService.loginUser(userRequest);
     }
 
+    /**
+     * Retrieves all registered users.
+     *
+     * @return List of UserResponse objects containing user info
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getAllusers() {

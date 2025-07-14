@@ -1,3 +1,8 @@
+/**
+ * A circular button UI which is used as 
+ * an indicator to add reminders.
+ */
+
 import React, { Pressable, StyleSheet, Text } from "react-native";
 
 type buttonProp = {

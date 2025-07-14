@@ -1,3 +1,12 @@
+/**
+ * Different types of buttons, which have to 
+ * include texxt, optional height, optional 
+ * width, optional onPress function. 
+ * 
+ * If the height and width are not passed as props, 
+ * it defaults to 75% and 100% respectively.
+ */
+
 import React from "react";
 import { StyleSheet, Text, Pressable, ViewStyle, DimensionValue } from "react-native";
 

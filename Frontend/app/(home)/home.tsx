@@ -1,3 +1,12 @@
+/**
+ * The home page is responsible for showing 
+ * all things necessary within the home screen. For 
+ * example, the user's upcoming reminders are shows 
+ * as lists. The screen also contains a button to add 
+ * reminders. It also has a button to show all the 
+ * previously completed reminders.
+ */
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useRef } from "react";
 import { View, SafeAreaView, Pressable, StyleSheet, ScrollView, Modal, Image, Platform } from "react-native";
@@ -65,12 +74,23 @@ const HomeScreen = () => {
     );
     const notificationListener = useRef<Notifications.EventSubscription | null>(null);
     const responseListener = useRef<Notifications.EventSubscription | null>(null);
+
+    /**
+     * Set of notifications that has alreadt been scheduled. 
+     * It is a 'Set' data structured as sets store only unique 
+     * elements.
+     */
     const triggeredNotifications = useRef<Set<string>>(new Set());
     
     const [currentDate, setCurrentDate] = useState('');
+
+    /** 
+     * List of the specific user's notification, 
+     * fetched from the backend.
+    */ 
     const [userNotifications, setUserNotifications] = useState<NotificationObject[]>([])
 
-    // ========== VARIABLES TO KEEP TRACK OF CHANGES ==========
+    // ========== VARIABLES TO KEEP TRACK OF CHANGES WITHIN THE MODAL ==========
 
     const [originalTitle, setOriginalTitle] = useState('')
     const [originalDescription, setOriginalDescription] = useState('')
@@ -79,6 +99,8 @@ const HomeScreen = () => {
     const [originalRemindTime, setoriginalRemindTime] = useState(new Date())
 
     // ========================================================
+
+    // ============ VARIABLES WITHIN THE MODAL =================
 
     const [viewReminderModalVisible, setViewReminderModalVisible] = useState(false)
     
@@ -94,12 +116,30 @@ const HomeScreen = () => {
     const [remindDate, setRemindDate] = useState(new Date())
     const [remindTime, setRemindTime] = useState(new Date())
 
+    // ========================================================
+
     const [refreshKey, setRefreshKey] = useState(0);
 
+    /**
+     * This useEffect is responsible for creating a list of 
+     * scheduled notifications, given a list of notification 
+     * called 'userNotifications'. This use effect takes 
+     * place when the component mounts, whenever there is a 
+     * change/update in userNotifications.
+     */
     useEffect(() => {
 
         console.log('Use effect triggered')
+
+        // For each notification in user notifications, 
         userNotifications.forEach((notification) => {
+
+            /** 
+             * If a notification with a specific noti ID is not 
+             * present in the triggeredNotificatinos set, then 
+             * the notification ID is added to the set of 
+             * triggeredNotifications, and a push noti is scheduled.
+            */
             if(!triggeredNotifications.current.has(notification.notificationId)) {
                 triggeredNotifications.current.add(notification.notificationId);
                 schedulePushNotification(notification.title, notification.description, notification.notifyTime)
@@ -109,20 +149,37 @@ const HomeScreen = () => {
         
     }, [userNotifications])
 
+    /**
+     * This useEffect is responsible for registering notifications 
+     * as push notifications. This use effect takes place only once, 
+     * when the component mounts. 
+     */
     useEffect(() => {
+
+        // Request permission and retrieve Expo push token
         registerForPushNotificationsAsync().then(token => token && setExpoPushToken(token));
 
+        // For Android: fetch existing notification channels
         if (Platform.OS === 'android') {
             Notifications.getNotificationChannelsAsync().then(value => setChannels(value ?? []));
         }
+
+        /** Listen for incoming notifications while the app is 
+         * in the foreground.
+         */ 
         notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
             setNotification(notification);
         });
 
+        /**
+         * Listen for user's interaction with a notification 
+         * (tap, dismiss, etc.)
+         */
         responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
             console.log(response);
         });
 
+        // Cleanup listeners when the component unmounts
         return () => {
             notificationListener.current &&
                 Notifications.removeNotificationSubscription(notificationListener.current);
@@ -132,13 +189,26 @@ const HomeScreen = () => {
         }, 
     []);
 
+    /**
+     * Schedules a push notification to be delivered at a specific 
+     * time
+     * @param notiTitle Title of the notification
+     * @param description Description of the notification
+     * @param notifyTime Date and time for when the notification is to be triggered
+     */
     async function schedulePushNotification(notiTitle: string, description: string, notifyTime: Date) {
       await Notifications.scheduleNotificationAsync({
+
+        // Content of the notification
         content: {
           title: notiTitle,
           body: description,
           data: { data: 'goes here', test: { test1: 'more data' } },
         },
+
+        /**When to trigget the notification, and the 
+         * trigger type
+         */
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: new Date(notifyTime),
@@ -146,9 +216,21 @@ const HomeScreen = () => {
       });
     }
       
+    /**
+     * Register the device for push notifications and 
+     * retrieves  the Expo push token.
+     * 
+     * In android, it sets up a notification channel, 
+     * which is required for push permissions to work properly.
+     * 
+     * In pyysical devices, it requests for notification permissions, 
+     * and retrieves the Expo push token.
+     * @returns Expo push token as string, or error if registration fails
+     */
     async function registerForPushNotificationsAsync() {
         let token;
 
+        // Setup android notification channel
         if (Platform.OS === 'android') {
             await Notifications.setNotificationChannelAsync('myNotificationChannel', {
                 name: 'A channel is needed for the permissions prompt to appear',
@@ -157,7 +239,8 @@ const HomeScreen = () => {
                 lightColor: '#FF231F7C',
             });
         }
-      
+
+        // Notification works only in physical devices and not simulators
         if (Device.isDevice) {
             const { status: existingStatus } = await Notifications.getPermissionsAsync();
             let finalStatus = existingStatus;
@@ -192,6 +275,15 @@ const HomeScreen = () => {
         return token;
     }  
 
+    /**
+     * The useEffect is responsible for retrieving the token 
+     * from the asyncStorage, and validating it with the backend 
+     * to ensure the correct session of the user, and redirecting 
+     * the user to the required screens. 
+     * 
+     * The use effect takes place once only when the component 
+     * mounts.
+     */
     useEffect(() => {
         const getData = async () => {
           try {
@@ -216,8 +308,22 @@ const HomeScreen = () => {
         getData();
     }, [])
 
+    /**
+     * This useEffect is responsible for fetching the 
+     * current user's reminders, and sorting them according 
+     * to their completed status. 
+     * 
+     * This useEffect takes place only whenever there is a change 
+     * in the valus of the following- email, token, and refreshkey
+     * when the component mounts.
+     */
     useEffect(() => {
         const fetchUserReminders = async () => {
+
+            /** 
+             * If there is no email or token, then this 
+             * method does not take place
+             */
             if (!email || !token) return
             try {
                 console.log(email)
@@ -227,12 +333,15 @@ const HomeScreen = () => {
                         (a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     );
     
+                    /**
+                     * Filters the reminders according to their completed 
+                     * status.
+                     */
                     const completed = sortedReminders.filter((r: any) => r.completed === true);
                     const incompleted = sortedReminders.filter((r: any) => !r.completed);
 
                     setCompletedReminders(completed)
                     setIncompletedReminders(incompleted)
-                    // setReminders(sortedReminders)
                     console.log(`User's reminders received:`, response.data)
                 }
             } catch (err: any) {
@@ -242,6 +351,14 @@ const HomeScreen = () => {
         fetchUserReminders()
     }, [email, token, refreshKey])
 
+    /**
+     * This useEffect is responsible for fetching the user's 
+     * notifications from the backend using the user's email, 
+     * and token. 
+     * 
+     * This method takes place when there is change in value of
+     * email, token, and refreshKey.
+     */
     useEffect(() => {
         const fetchUserNotifications = async () => {
             if (!email || !token) return
@@ -259,11 +376,9 @@ const HomeScreen = () => {
         fetchUserNotifications()
     }, [email, token, refreshKey])
 
-    // const signOut = async () => {
-    //     await AsyncStorage.removeItem("token");
-    //     router.dismissTo('/login')
-    // }
-
+    /**
+     * Resets the input fields within the modal view.
+     */
     const resetReminderModalFields = () => {
         setSelectedReminderId('')
         setTitle('')
@@ -283,40 +398,65 @@ const HomeScreen = () => {
         // ========================================================
     }
 
+    /**
+     * Responsible for posting reminder to the backend, 
+     * taking values from the input fields within the modal 
+     * views.
+     * @returns Returns error if failed.
+     */
     const postReminder = async () => {
         try {
+
+            // Title cannot remain empty.
             if(title === '') {
                 alert('Title cannot be empty.')
                 return
             }
 
+            // Merges the date and time together to store in the backend
             const mergedDateTime = new Date(remindDate)
             mergedDateTime.setHours(remindTime.getHours())
             mergedDateTime.setMinutes(remindTime.getMinutes())
             mergedDateTime.setSeconds(0)
             mergedDateTime.setMilliseconds(0)
 
+            // Sends an API call to the backend to create reminder
             const reminderResponse = await createReminder(title, description, email, false, false, (new Date()), (new Date()), mergedDateTime, token)
+            
+            // Shows an alert if there are no response
             if(!reminderResponse) {
                 alert("Creating reminder failed");
                 return
             }
 
+            /**
+             * Upon reminder creation success, creates notification in 
+             * the backend
+             */
             const notificationResponse = await createNotification(reminderResponse.data.reminderId, reminderResponse.data.title, reminderResponse.data.userEmail, reminderResponse.data.description, false, reminderResponse.data.remindAt, token)
             
+            // Shows alert if no notification response
             if (!notificationResponse) {
                 alert("Reminder created, but notification failed. Delete reminder and try again");
                 return;
             }
 
+            // Upon success of notificatoin, resets modal view
             setCreateReminderModalVisible(false);
             resetReminderModalFields();
+
+            // Refreshes to fetch data from backend again
             setRefreshKey((prev) => prev + 1);
         } catch (err: any) {
             alert("Creating reminder failed", err.message || "Something went wrong");
         }
     }
 
+    /**
+     * Changes the completed status of the reminders in the 
+     * backend. 
+     * @param reminderId The unique ID of the reminder that requires status update
+     */
     const changeReminderCompletedStatus = async (reminderId: string) => {
         try {
             const response = await updateReminderCompleteStatus(reminderId, token)
@@ -324,6 +464,8 @@ const HomeScreen = () => {
                 alert("Changing reminder status failed")
                 return
             }
+
+            // Deletes the attached notification to the reminder
             const notificationResponse = await deleteNotification(reminderId, token)
             
             if(notificationResponse.status !== 200) {
@@ -338,6 +480,14 @@ const HomeScreen = () => {
         }
     }
 
+    /**
+     * Fetches the reminder's details from the backend 
+     * when a user selects a specific reminder from the 
+     * list of reminders showing on the screen. 
+     * @param reminderId The unique ID of the reminder which 
+     * the user selected, required to fetch the specific reminder 
+     * from the backend.
+     */
     const fetchReminder = async (reminderId: string) => {
         console.log('get reminder pressed')
         try {
@@ -346,6 +496,10 @@ const HomeScreen = () => {
                 const data = response.data;
                 const reminderDate = new Date(data.remindAt);
                 
+                /** 
+                 * Sets the values with the selected reminder's fetched 
+                 * values to display in the modal view
+                */
                 setSelectedReminderId(data.reminderId)
                 setTitle(data.title);
                 setDescription(data.description);
@@ -354,6 +508,7 @@ const HomeScreen = () => {
                 setDisplayDate(reminderDate);
                 setDisplayTime(reminderDate);
 
+                // Variables to keep track of original values 
                 setOriginalTitle(data.title)
                 setOriginalDescription(data.description)
                 setoriginalRemindDate(reminderDate)
@@ -366,6 +521,12 @@ const HomeScreen = () => {
         }
     }
 
+    /**
+     * Changes the details of the current user's selected reminder 
+     * with the newly set values by the user in the Backend by patching. 
+     * This method only takes place if there is atleast one 
+     * change in the input field values.
+     */
     const patchReminder = async () => {
         const mergedCurrentRemindAt = new Date(remindDate);
         mergedCurrentRemindAt.setHours(remindTime.getHours());
@@ -408,16 +569,24 @@ const HomeScreen = () => {
                     }
                 }
 
+                // Refreshes key to refetch data
                 setRefreshKey(prev => prev + 1);
             }
         } catch (err: any) {
             alert("Updating reminder", err.message || "Something went wrong");
         }
         
+        // Reset and close the modal view 
         resetReminderModalFields();
         setViewReminderModalVisible(false);
     };
 
+    /**
+     * Deletes the specific reminder when the user slides 
+     * a reminder to the right side. 
+     * @param reminderId The unique ID of the specific reminder to be deleted.
+     * @returns 
+     */
     const deleteCurrentReminder = async (reminderId: string) => {
         try {
             console.log('delete pressed', reminderId)
@@ -434,6 +603,8 @@ const HomeScreen = () => {
             }
 
             console.log('Reminder deleted.')
+
+            // Refreshes to refetch uhser's data
             setRefreshKey(prev => prev + 1)
         } catch (err: any) {
             alert("Deleting reminder failed", err.message || "Something went wrong");
@@ -443,6 +614,9 @@ const HomeScreen = () => {
     return (
         <SafeAreaView style={styles.mainContainer}>
 
+            {/* This modal view appears when the user presses 
+            the "+" sign on the screen. This pulls up the 
+            modal view which allows the user to create reminders */}
             <CreateReminderModal
                 visible={createReminderModalVisible}
                 onClose={() => {setCreateReminderModalVisible(false); resetReminderModalFields()}}
@@ -465,6 +639,10 @@ const HomeScreen = () => {
                 setDisplayTime={setDisplayTime}
             />
 
+            {/* This modal view appears when the user presses a 
+            reminder, which pulls up a modal view with the specific 
+            reminder's details showing in the input field, allowing 
+            the users to update the reminder if necessary. */}
             <CreateReminderModal
                 visible={viewReminderModalVisible}
                 onClose={() => {setViewReminderModalVisible(false); resetReminderModalFields()}}
@@ -487,6 +665,10 @@ const HomeScreen = () => {
                 setDisplayTime={setDisplayTime}
             />
 
+            {/* This modal view appears when the user presses 
+            the "show all" button on the screen. This pulls up the 
+            modal view which contains all the previously completed 
+            reminders. */}
             <Modal animationType="slide" transparent visible={showAllModalVisible} onRequestClose={() => setShowAllModalVisible(false)}>
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
@@ -495,6 +677,9 @@ const HomeScreen = () => {
                             <DoneCancelButton text="Done" onPress={() => setShowAllModalVisible(false)} />
                         </View>
 
+                        {/* If the completed reminders list is empty, shows an 
+                        image. If it is not empty, shows the reminders on the 
+                        screen */}
                         <View style={styles.modalReminderContainer}>
                             <ScrollView style={{ flex: 1 }}>
                                 {completedReminders.length === 0 ? (
@@ -521,6 +706,7 @@ const HomeScreen = () => {
                 </View>
             </Modal>
 
+            {/* Intro section with username greeting and settings button */}
             <View style={styles.introContainer}>
                 <View style={styles.leftIntroContainer}>
 
@@ -535,6 +721,7 @@ const HomeScreen = () => {
                 </View>
             </View>
 
+            {/* Calendar layout with placeholder containers and "+" button for adding reminders */}
             <View style={styles.calendarContainer}>
                 <View style={styles.monthContainer}></View>
 
@@ -545,6 +732,9 @@ const HomeScreen = () => {
                 </View>
             </View>
 
+            {/* If the incomplete reminders list is empty, shows an 
+            image. If it is not empty, shows the reminders on the 
+            screen */}
             <View style={styles.reminderContainer}>
                 <ScrollView style={{ flex: 1 }}>
                     {incompletedReminders.length === 0 ? (
@@ -568,7 +758,7 @@ const HomeScreen = () => {
                 </ScrollView>
             </View>
 
-
+            {/* Button to open modal displaying all completed reminders */}
             <View style={styles.showAllContainer}>
                 <ShowAllButton width={'20%'} onPress={() => setShowAllModalVisible(true)} />
             </View>
