@@ -75,6 +75,21 @@ As such, you can connect your services to their respective mongoDB databases.
 
 ## Running Backend Services
 
+Make an `.env` file in your root directory as follows:
+
+```
+export MONGO_USERNAME=USERNAME
+export MONGO_PASSWORD=PASSWORD
+
+export EUREKA_SERVER_URL=http://localhost:8761/eureka/
+export AUTHENTICATION_SERVICE_URL=http://localhost:8082/
+export NOTIFICATION_SERVICE_URL=http://localhost:8084/
+export REMINDER_SERVICE_URL=http://localhost:8085/
+export LOGGING_SERVICE_URL=http://localhost:8083
+
+export JWT_SECRET=A_LONG_JWT_KEY
+```
+
 Each service in the backend needs to be rebuilt by maven before it is containerized and run using docker. Below are the commands:
 
 ### Authentication Service

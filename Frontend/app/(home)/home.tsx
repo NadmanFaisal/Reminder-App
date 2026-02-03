@@ -197,6 +197,15 @@ const HomeScreen = () => {
      * @param notifyTime Date and time for when the notification is to be triggered
      */
     async function schedulePushNotification(notiTitle: string, description: string, notifyTime: Date) {
+      // Variables to check when the notification is created
+      const triggerDate = new Date(notifyTime);
+      const now = new Date();
+
+      // If the date is in the past, DO NOT schedule it
+      if (triggerDate.getTime() <= now.getTime()) {
+        console.log(`Skipping notification for "${notiTitle}" because the time (${triggerDate}) has passed.`);
+        return;
+      }
       await Notifications.scheduleNotificationAsync({
 
         // Content of the notification
